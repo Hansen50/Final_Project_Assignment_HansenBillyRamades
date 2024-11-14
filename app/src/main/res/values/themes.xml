@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Final_Project_Assignment_HansenBillyRamades" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="colorPrimary">@color/main_color</item>
+    </style>
+
+    <style name="BottomNavigationView">
+        <item name="colorSecondaryContainer">@color/tertinary_pink</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize10Percent" parent="">
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="Theme.Final_Project_Assignment_HansenBillyRamades" parent="Base.Theme.Final_Project_Assignment_HansenBillyRamades" />
+</resources>

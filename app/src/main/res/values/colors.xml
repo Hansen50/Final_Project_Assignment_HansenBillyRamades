@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="oil_black">#0C0C0C</color>
+    <color name="grey_font_text">#58595B</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="main_color">#EA3A60</color>
+    <color name="grey">#EEEEEE</color>
+    <color name="grey_stroke">#F5F5F5</color>
+    <color name="grey_stroke1">#F4F4F4</color>
+    <color name="yellow">#FFC120</color>
+    <color name="grey_search_bar">#F4F4F4</color>
+    <color name="tertinary_pink">#FCDFF7</color>
+    <color name="tertinary_purple">#F1EDFC</color>
+    <color name="tertinary_green">#E4F3EA</color>
+    <color name="tertinary_red">#FFECE8</color>
+    <color name="tertinary_yellow">#FFF6E4</color>
+    <color name="tertinary_blue">#E4ECF3</color>
+    <color name="green">#3A9B7A</color>
+</resources>
