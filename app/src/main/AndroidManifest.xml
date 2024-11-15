@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Final_Project_Assignment_HansenBillyRamades"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.ui.activity.TransactionOrderDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.ui.activity.ChoosePaymentWebViewActivity"
             android:exported="false" />
         <activity

@@ -1,5 +1,6 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -12,6 +13,7 @@ import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityProductDetailBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
+import com.example.final_project_assignment_hansenbillyramades.presentation.ui.fragment.MyCartFragment
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.ProductDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.FlowCollector
@@ -38,8 +40,15 @@ class ProductDetailActivity : AppCompatActivity() {
         val productId = intent.getIntExtra("id_product", 0)
         Log.d("ProductDetailActivity", "Product ID: $productId")
 
+        binding.ivCart.setOnClickListener {
+            val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
+            intent.putExtra("navigateTo", "MyCartFragment")
+            startActivity(intent)
+            finish()
+        }
+
         lifecycleScope.launch {
-            viewModel.getProductDetail(productId, null, null)
+            viewModel.getProductDetail(productId)
 
             viewModel.productState.collect { state ->
                 when (state) {
@@ -62,7 +71,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     is ProductsState.SuccessDetail -> {
                         val product = state.product
                         binding.tvTitleProduct.text = product.name
-                        binding.tvPrice.text = formatPrice(product.price)
+                        binding.tvCurrency.text = formatPrice(product.price)
                         binding.tvContentDescription.text = product.description
                         binding.tvTypeCategory.text = product.category
                         binding.tvTotalQuantity.text = "${product.quantity}"
@@ -85,10 +94,10 @@ class ProductDetailActivity : AppCompatActivity() {
                     val product = state.product
                     val cart = CartEntity(
                         productId = product.id,
-                        productName = product.name,
+                        productName = product.name?: "",
                         productPrice = product.price,
                         productQuantity = 1,
-                        image = product.image
+                        image = product.image?: ""
                     )
                     viewModel.addCart(cart) {
                         Toast.makeText(
@@ -96,6 +105,10 @@ class ProductDetailActivity : AppCompatActivity() {
                             "${product.name} SuccessFully Added to Cart",
                             Toast.LENGTH_SHORT
                         ).show()
+                        val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
+                        intent.putExtra("navigateTo", "MyCartFragment")
+                        startActivity(intent)
+                        finish()
                     }
                 }
             }

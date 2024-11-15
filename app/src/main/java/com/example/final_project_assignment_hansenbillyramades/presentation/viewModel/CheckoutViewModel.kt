@@ -84,6 +84,7 @@ class CheckoutViewModel @Inject constructor(
                 val cartItems = cartList.value ?: emptyList()
                 val email = FirebaseAuth.getInstance().currentUser?.email ?: "default@example.com"
                 val items = cartItems.map { cartItem ->
+                    Log.d("coba", cartItems.toString())
                     Item(
                         id = cartItem.productId,
                         name = cartItem.productName.take(10),
@@ -105,7 +106,6 @@ class CheckoutViewModel @Inject constructor(
                     val token = response.data?.transaction?.token
 
                     if (paymentUrl != null && token != null) {
-                        // Gabungkan paymentUrl dengan token sebagai query parameter
                         val paymentUrlWithToken = "$paymentUrl?token=$token"
                         _orderState.value = OrderState.SuccessPayment(paymentUrlWithToken) // Kirimkan URL lengkap ke UI
                     } else {

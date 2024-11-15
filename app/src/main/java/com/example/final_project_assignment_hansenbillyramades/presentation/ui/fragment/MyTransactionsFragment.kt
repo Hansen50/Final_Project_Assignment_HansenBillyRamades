@@ -1,5 +1,6 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,13 +14,16 @@ import com.example.final_project_assignment_hansenbillyramades.databinding.Fragm
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentMyTransactionsBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.TransactionOrderState
 import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemTransactionOrderAdapter
+import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemTransactionOrderListener
+import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.ProductDetailActivity
+import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.TransactionOrderDetailActivity
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyTransactionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MyTransactionsFragment : Fragment() {
+class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
     private var _binding: FragmentMyTransactionsBinding? = null
     private val viewModel: MyTransactionViewModel by viewModels()
     private val binding get() = _binding!!
@@ -37,7 +41,7 @@ class MyTransactionsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            val adapter = ItemTransactionOrderAdapter(emptyList())
+            val adapter = ItemTransactionOrderAdapter(emptyList(), this@MyTransactionsFragment)
             binding.rvMyTransaction.layoutManager = LinearLayoutManager(requireContext())
             binding.rvMyTransaction.adapter = adapter
             viewModel.loadAllTransactionOrder()
@@ -57,10 +61,18 @@ class MyTransactionsFragment : Fragment() {
                             is TransactionOrderState.Success -> {
                                 adapter.submitList(value.transactionOrder)
                             }
+
+                            else -> {}
                         }
                     }
                 })
             }
         }
+    }
+
+    override fun onClick(id: String) {
+        val intent = Intent(requireContext(), TransactionOrderDetailActivity::class.java)
+        intent.putExtra("id_transaction_order", id)
+        startActivity(intent)
     }
 }

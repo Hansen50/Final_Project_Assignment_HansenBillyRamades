@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.room.Room
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.AddressLocalDataSource
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.AddressLocalDataSourceImpl
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.dataStore
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.ApiService
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.UserRemoteDataSource
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.UserRemoteDataSourceImpl
@@ -101,6 +103,13 @@ object AppModule {
     @Singleton
     fun provideAddressLocalDataSource(stomazonDatabase: StomazonDatabase): AddressLocalDataSource {
         return AddressLocalDataSourceImpl(stomazonDatabase.addressDao())
+    }
+
+
+    @Provides
+    @Singleton
+    fun providePreferenceDataStore(@ApplicationContext context: Context): PreferenceDataStore {
+        return PreferenceDataStore.getInstance(context.dataStore)
     }
 
 

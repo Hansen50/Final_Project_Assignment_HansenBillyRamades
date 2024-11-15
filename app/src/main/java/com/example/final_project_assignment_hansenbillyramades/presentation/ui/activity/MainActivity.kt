@@ -54,7 +54,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        replaceFragment(HomeFragment())
+        val navigateTo = intent.getStringExtra("navigateTo")
+        if (navigateTo == "MyCartFragment") {
+            binding.bottomNav.selectedItemId = R.id.menu_cart
+        } else {
+            replaceFragment(HomeFragment())
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {

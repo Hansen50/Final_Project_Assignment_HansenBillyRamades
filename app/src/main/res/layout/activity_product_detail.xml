@@ -21,17 +21,17 @@
         app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed" />
 
     <ImageView
-        android:id="@+id/iv_edit"
+        android:id="@+id/iv_cart"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:src="@drawable/ic_cart_outline"
         app:layout_constraintBottom_toBottomOf="@id/toolbar_product_detail"
-        app:layout_constraintEnd_toStartOf="@id/iv_delete"
+        app:layout_constraintEnd_toStartOf="@id/iv_share"
         app:layout_constraintTop_toTopOf="@id/toolbar_product_detail" />
 
     <ImageView
-        android:id="@+id/iv_delete"
+        android:id="@+id/iv_share"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
@@ -76,29 +76,16 @@
 
                 <TextView
                     android:id="@+id/tv_currency"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Rp"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/tv_price"
+                    app:layout_constraintEnd_toStartOf="@id/tv_category"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_price"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="0000"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_currency"
-                    app:layout_constraintEnd_toStartOf="@id/tv_category"
-                    app:layout_constraintStart_toEndOf="@id/tv_currency"
-                    app:layout_constraintTop_toTopOf="@id/tv_currency" />
 
                 <TextView
                     android:id="@+id/tv_category"
@@ -111,7 +98,7 @@
                     android:layout_marginEnd="4dp"
                     app:layout_constraintBottom_toBottomOf="@id/tv_currency"
                     app:layout_constraintEnd_toStartOf="@id/tv_type_category"
-                    app:layout_constraintStart_toEndOf="@id/tv_price"
+                    app:layout_constraintStart_toEndOf="@id/tv_currency"
                     app:layout_constraintTop_toTopOf="@id/tv_currency" />
 
                 <TextView

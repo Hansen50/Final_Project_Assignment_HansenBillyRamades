@@ -2,32 +2,20 @@ package com.example.final_project_assignment_hansenbillyramades.presentation.ui.
 
 import android.content.Intent
 import android.icu.text.NumberFormat
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityCheckoutBinding
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Order
 import com.example.final_project_assignment_hansenbillyramades.domain.model.OrderState
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
-import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemCartsAdapter
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemCartListener
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.CheckoutViewModel
-import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyCartViewModel
-import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.ProductDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
@@ -95,7 +83,6 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                         }
 
                         is OrderState.SuccessPayment -> {
-                            // Mendapatkan URL pembayaran dan melanjutkan ke WebView untuk proses pembayaran
                             val paymentUrl = value.paymentUrl
                             val intent = Intent(
                                 this@CheckoutActivity,

@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyCartViewModel @Inject constructor(
-    private val repository: ProductRepository,
     private val db: StomazonDatabase,
 ) : ViewModel() {
 
@@ -52,7 +51,7 @@ class MyCartViewModel @Inject constructor(
     fun calculateTotalPrice(cartList: List<CartEntity>) {
         var total = 0f
         cartList.forEach {
-            total += it.productPrice * it.productQuantity  // Mengalikan harga produk dengan kuantitas
+            total += it.productPrice * it.productQuantity
         }
         _totalPrice.value = total
     }

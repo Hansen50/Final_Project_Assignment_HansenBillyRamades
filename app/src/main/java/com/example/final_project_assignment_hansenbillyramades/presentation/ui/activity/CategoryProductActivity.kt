@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -47,7 +48,25 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
         binding.rvProductsCategory.layoutManager =
             GridLayoutManager(this@CategoryProductActivity, 2)
         binding.rvProductsCategory.adapter = adapter
-        viewModel.getProductsByCategory(categoryName)
+        viewModel.getProductsByCategory(categoryName, "")
+
+        binding.svSearchProducCategory.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(search: String?): Boolean {
+                if (!search.isNullOrEmpty()) {
+                    viewModel.getProductsByCategory(categoryName, search)
+                }
+                binding.svSearchProducCategory.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newSearch: String?): Boolean {
+                if (newSearch.isNullOrEmpty()) {
+                    viewModel.getProductsByCategory(categoryName, null)
+                }
+                return true
+            }
+        })
 
 
         lifecycleScope.launch {

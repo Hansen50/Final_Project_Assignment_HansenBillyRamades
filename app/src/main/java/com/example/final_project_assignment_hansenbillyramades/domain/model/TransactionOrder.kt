@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TransactionOrder(
-    val id: Int,
+    val id: String,
     val status: String,
     val totalPrice: Int,
 ) : Parcelable

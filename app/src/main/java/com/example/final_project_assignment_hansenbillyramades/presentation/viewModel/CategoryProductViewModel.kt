@@ -24,11 +24,11 @@ class CategoryProductViewModel @Inject constructor(
     private val _productsState = MutableStateFlow<ProductsState>(ProductsState.Loading)
     val productsState: StateFlow<ProductsState> get() = _productsState
 
-    fun getProductsByCategory(categoryName: String) {
+    fun getProductsByCategory(categoryName: String, search: String?) {
         viewModelScope.launch {
             _productsState.value = ProductsState.Loading
             try {
-                val products = getProductsByCategoryUseCase(categoryName)
+                val products = getProductsByCategoryUseCase(categoryName, search)
                 Log.d("CategoryProductViewModel", "Products fetched: $products")
 
                 if (products.isNotEmpty()) {

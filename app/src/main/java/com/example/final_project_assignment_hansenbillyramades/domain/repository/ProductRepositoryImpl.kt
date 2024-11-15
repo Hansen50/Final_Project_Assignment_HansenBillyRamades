@@ -1,5 +1,6 @@
 package com.example.final_project_assignment_hansenbillyramades.domain.repository
 
+import com.example.final_project_assignment_hansenbillyramades.data.model.ProductDetailResponse
 import com.example.final_project_assignment_hansenbillyramades.data.model.ProductResponse
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.UserRemoteDataSource
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
@@ -12,13 +13,15 @@ class ProductRepositoryImpl @Inject constructor(
         return remoteDataSource.getAllProducts(search, limit).data?.mapNotNull { it?.toProduct() } ?: emptyList()
     }
 
-//    override suspend fun getProductById(id: Int): Products {
-//        return remoteDataSource.getProductById(id)
-//    }
+    override suspend fun getProductById(id: Int): Products {
+        val response = remoteDataSource.getProductById(id)
+        return response.data?.toProductDetail() ?: Products()
+    }
 
 
-    override suspend fun getProductByCategory(categoryName: String): List<Products> {
-        val response = remoteDataSource.getProductByCategory(categoryName)
+
+    override suspend fun getProductByCategory(categoryName: String, search: String?): List<Products> {
+        val response = remoteDataSource.getProductByCategory(categoryName, search)
 
         return response.data?.flatMap { dataItem ->
             dataItem?.products?.map { product ->
@@ -51,3 +54,19 @@ fun ProductResponse.Data.toProduct(): Products {
         totalReviews = this.totalReviews ?: ""
     )
 }
+
+fun ProductDetailResponse.Data.toProductDetail(): Products {
+    return Products(
+        id = this.pdId ?: 0,
+        name = this.pdName ?: "",
+        price = this.pdPrice ?: 0,
+        description = this.pdDescription ?: "",
+        category = this.categories?.firstOrNull()?.ctName ?: "No Category",
+        image = this.pdImageUrl ?: "",
+        quantity = this.pdQuantity ?: 0,
+        averageRating = this.totalAverageRating ?: 0.0,
+        totalReviews = this.totalReviews ?: ""
+    )
+}
+
+

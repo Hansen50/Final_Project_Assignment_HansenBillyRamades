@@ -7,6 +7,7 @@ import com.example.final_project_assignment_hansenbillyramades.data.source.local
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.ProductRepository
+import com.example.final_project_assignment_hansenbillyramades.domain.usecase.GetProductByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
-    private val repository: ProductRepository,
+    private val getProductByIdUseCase: GetProductByIdUseCase,
     private val db: StomazonDatabase
 
     ) : ViewModel() {
@@ -24,24 +25,24 @@ class ProductDetailViewModel @Inject constructor(
     val productState: StateFlow<ProductsState> = _productState
 
 
-    fun getProductDetail(id: Int, name: String?, limit: Int?) {
-        viewModelScope.launch {
-            _productState.value = ProductsState.Loading
+    fun getProductDetail(id: Int) {
+    viewModelScope.launch {
+        _productState.value = ProductsState.Loading
 
-            try {
-                val productList = repository.getAllProducts(name, limit)
-                val productDetail = productList.find { it.id == id }
-
-                if (productDetail != null) {
-                    _productState.value = ProductsState.SuccessDetail(productDetail)
-                } else {
-                    _productState.value = ProductsState.Error("Product not found")
-                }
-            } catch (e: Exception) {
-                _productState.value = ProductsState.Error(e.message ?: "An error occurred")
+        try {
+            // Mengambil produk berdasarkan ID langsung
+            val productDetail = getProductByIdUseCase(id)
+            if (productDetail != null) {
+                _productState.value = ProductsState.SuccessDetail(productDetail)
+            } else {
+                _productState.value = ProductsState.Error("Product not found")
             }
+        } catch (e: Exception) {
+            _productState.value = ProductsState.Error(e.message ?: "An error occurred")
         }
     }
+}
+
 
     fun addCart(cart: CartEntity, onSuccess: () -> Unit) {
         viewModelScope.launch {
@@ -50,3 +51,5 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 }
+
+
