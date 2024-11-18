@@ -1,7 +1,9 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -9,14 +11,19 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityChoosePaymentWebViewBinding
+import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.PaymentWebViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ChoosePaymentWebViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChoosePaymentWebViewBinding
+    private val paymentWebViewModel: PaymentWebViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChoosePaymentWebViewBinding.inflate(layoutInflater)
@@ -46,7 +53,12 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                Log.d("WebView", "Current URL: $url")
                 binding.pbLoadingWebView.isVisible = false
+
+                if (url != null && url.contains("transaction_status=settlement")) {
+                    handleSuccessfulPayment()
+                }
             }
 
 
@@ -71,6 +83,23 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun handleSuccessfulPayment() {
+        lifecycleScope.launch {
+            // Menghapus semua item yang telah dibayar menggunakan PaymentWebViewModel
+            paymentWebViewModel.clearCart()
+
+            // Menampilkan pesan konfirmasi
+            Toast.makeText(this@ChoosePaymentWebViewActivity, "Payment successful. Your cart has been cleared.", Toast.LENGTH_SHORT).show()
+
+            // Navigasi ke MainActivity setelah pembayaran berhasil
+            val intent = Intent(this@ChoosePaymentWebViewActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()  // Menutup activity ini
+        }
+    }
+
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

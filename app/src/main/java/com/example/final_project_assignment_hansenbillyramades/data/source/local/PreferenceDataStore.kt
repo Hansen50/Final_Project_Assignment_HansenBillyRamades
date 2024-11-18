@@ -1,6 +1,7 @@
 package com.example.final_project_assignment_hansenbillyramades.data.source.local
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -29,6 +30,18 @@ class PreferenceDataStore private constructor(private val dataStore: DataStore<P
             dataStore.data.first()[DataStoreConstant.IS_ONBOARDED] ?: false
         }
     }
+
+    suspend fun setUserLoggedIn(isLoggedIn: Boolean) {
+        dataStore.edit { preferences -> preferences[DataStoreConstant.IS_LOGIN] = isLoggedIn }
+        Log.d("PreferenceDataStore", "User logged in: $isLoggedIn")
+    }
+
+    suspend fun isUserLoggedIn(): Boolean {
+        return withContext(Dispatchers.IO) {
+            dataStore.data.first()[DataStoreConstant.IS_LOGIN] ?: false
+        }
+    }
+
 
     companion object {
         @Volatile

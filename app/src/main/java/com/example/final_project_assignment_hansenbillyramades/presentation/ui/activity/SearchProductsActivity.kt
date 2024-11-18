@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.final_project_assignment_hansenbillyramades.R
@@ -67,6 +68,9 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
             viewModel.productsState.collect { value ->
                 when (value) {
                     is ProductsState.Error -> {
+                        binding.shimmerLayout.startShimmer()
+                        binding.shimmerLayout.isVisible = true
+                        binding.rvProducts.isVisible = false
                         Toast.makeText(
                             this@SearchProductsActivity,
                             value.message,
@@ -75,11 +79,17 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
                     }
 
                     is ProductsState.Loading -> {
+                        binding.shimmerLayout.startShimmer()
+                        binding.shimmerLayout.isVisible = true
+                        binding.rvProducts.isVisible = false
                         Toast.makeText(this@SearchProductsActivity, "Loading", Toast.LENGTH_SHORT)
                             .show()
                     }
 
                     is ProductsState.Success -> {
+                        binding.shimmerLayout.stopShimmer()
+                        binding.shimmerLayout.isVisible = false
+                        binding.rvProducts.isVisible = true
                         Log.d(
                             "CategoryProductActivity",
                             "Received Product Category ${value.products.size} products"

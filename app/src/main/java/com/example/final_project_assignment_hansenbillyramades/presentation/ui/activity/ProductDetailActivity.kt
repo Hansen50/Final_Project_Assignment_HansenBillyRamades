@@ -99,21 +99,21 @@ class ProductDetailActivity : AppCompatActivity() {
                         productQuantity = 1,
                         image = product.image?: ""
                     )
-                    viewModel.addCart(cart) {
-                        Toast.makeText(
-                            this@ProductDetailActivity,
-                            "${product.name} SuccessFully Added to Cart",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
-                        intent.putExtra("navigateTo", "MyCartFragment")
-                        startActivity(intent)
-                        finish()
-                    }
+                    viewModel.addCart(cart)
+                    Toast.makeText(
+                        this@ProductDetailActivity,
+                        "${product.name} Success added to cart",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
+                    intent.putExtra("navigateTo", "MyCartFragment")
+                    startActivity(intent)
+                    finish()
                 }
             }
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

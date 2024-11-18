@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
@@ -11,12 +10,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="12dp">
+        android:paddingBottom="8dp">
 
         <ImageView
             android:id="@+id/iv_product"
             android:layout_width="200dp"
-            android:layout_height="140dp"
+            android:layout_height="120dp"
             android:background="#ddd"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +24,7 @@
         <TextView
             android:id="@+id/tv_name_product"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="12dp"
             android:ellipsize="end"
@@ -42,7 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:tooltipText="Price"
             android:background="#ddd"
             android:textColor="@color/main_color"
@@ -74,7 +73,7 @@
             app:layout_constraintTop_toTopOf="@id/iv_rating"
             app:layout_constraintBottom_toBottomOf="@id/iv_rating"
             app:layout_constraintStart_toEndOf="@id/iv_rating"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="@id/tv_price"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

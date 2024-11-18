@@ -6,4 +6,5 @@ interface CartLocalDataSource {
     suspend fun insertCartItem(cartEntity: CartEntity)
     suspend fun updateCartItem(cartEntity: CartEntity)
     suspend fun deleteCartItem(cartEntity: CartEntity)
+    suspend fun clearAllCartItems()
 }

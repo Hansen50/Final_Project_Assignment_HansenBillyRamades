@@ -5,24 +5,31 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityLoginBinding
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+
+    @Inject
+    lateinit var preferenceDataStore: PreferenceDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -36,6 +43,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
+        binding.googleIcon.isVisible = false
+        binding.btnText.isVisible = false
+        binding.loadingLayout.isVisible = true
+
         val credentialManager = CredentialManager.create(this)
 
         val googleIdOption = GetGoogleIdOption.Builder()
@@ -55,10 +66,12 @@ class LoginActivity : AppCompatActivity() {
                 )
                 handleSignIn(result)
             } catch (e: GetCredentialException) {
+                resetButtonState()
                 Log.d("Error", e.message.toString())
             }
         }
     }
+
 
     private fun handleSignIn(result: GetCredentialResponse) {
         when (val credential = result.credential) {
@@ -88,19 +101,34 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Log.d("TAG", "signInWithCredential:success")
-                        Toast.makeText(this@LoginActivity, "Login Success", Toast.LENGTH_SHORT)
-                            .show()
-                        val intent = Intent(this@LoginActivity, OnBoardActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        lifecycleScope.launch {
+                            Toast.makeText(this@LoginActivity, "Login Success", Toast.LENGTH_SHORT)
+                                .show()
+                            preferenceDataStore.setUserLoggedIn(true)
+                            val intent = Intent(this@LoginActivity, OnBoardActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
                     } else {
-                        Log.w("TAG", "signInWithCredential:failure", task.exception)
-                        Toast.makeText(this@LoginActivity, "Login Failed, Please check your internet connection", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Login Failed, Please check your internet connection",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    resetButtonState()
                 }
         } else {
             Log.e("TAG", "ID Token is null")
+            resetButtonState()
         }
     }
+
+    private fun resetButtonState() {
+        binding.loadingLayout.isVisible = false
+        binding.googleIcon.isVisible = true
+        binding.btnText.isVisible = true
+    }
+
+
 }

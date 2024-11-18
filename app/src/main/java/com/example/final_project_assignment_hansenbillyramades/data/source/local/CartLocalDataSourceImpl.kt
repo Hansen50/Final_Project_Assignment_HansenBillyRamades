@@ -19,4 +19,8 @@ class CartLocalDataSourceImpl @Inject constructor(private val cartDao: CartDao) 
     override suspend fun deleteCartItem(cartEntity: CartEntity) {
         cartDao.deleteCart(cartEntity)
     }
+
+    override suspend fun clearAllCartItems() {
+        cartDao.clearAllCarts()
+    }
 }

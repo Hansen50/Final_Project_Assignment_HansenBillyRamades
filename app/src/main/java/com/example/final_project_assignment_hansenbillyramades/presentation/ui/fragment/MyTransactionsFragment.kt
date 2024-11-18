@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,12 +54,19 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
                     override suspend fun emit(value: TransactionOrderState) {
                         when(value) {
                             is TransactionOrderState.Error -> {
-                                //TODO
+                                binding.shimmerLayout.startShimmer()
+                                binding.shimmerLayout.isVisible = true
+                                binding.rvMyTransaction.isVisible = false
                             }
                             is TransactionOrderState.Loading -> {
-                                //TODO
+                                binding.shimmerLayout.startShimmer()
+                                binding.shimmerLayout.isVisible = true
+                                binding.rvMyTransaction.isVisible = false
                             }
                             is TransactionOrderState.Success -> {
+                                binding.shimmerLayout.stopShimmer()
+                                binding.shimmerLayout.isVisible = false
+                                binding.rvMyTransaction.isVisible = true
                                 adapter.submitList(value.transactionOrder)
                             }
 

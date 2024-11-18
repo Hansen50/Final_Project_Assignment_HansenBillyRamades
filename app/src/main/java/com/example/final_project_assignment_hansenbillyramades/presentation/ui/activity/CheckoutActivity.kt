@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityCheckoutBinding
+import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
+import com.example.final_project_assignment_hansenbillyramades.domain.model.CartState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.OrderState
 import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemCartsAdapter
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemCartListener
@@ -41,8 +43,26 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
 
         cartRecyclerView()
 
-        viewModel.cartList.observe(this) { cartItems ->
-            adapter.updateData(cartItems)
+        lifecycleScope.launch {
+            viewModel.cartState.collect { cartState ->
+                when (cartState) {
+                    is CartState.Loading -> {
+                        //TODO
+                    }
+
+                    is CartState.Success -> {
+                        adapter.updateData(cartState.carts)
+                    }
+
+                    is CartState.Error -> {
+                        Toast.makeText(
+                            this@CheckoutActivity,
+                            "Error: ${cartState.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
 
         viewModel.loadCart()
@@ -125,36 +145,30 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         }
     }
 
-    override fun onDelete(cart: CartEntity) {
+    override fun onDelete(cart: Cart) {
         lifecycleScope.launch {
             viewModel.deleteCart(cart)
         }
     }
 
-    override fun onUpdateQuantity(cart: CartEntity) {
+    override fun onUpdateQuantity(cart: Cart) {
         lifecycleScope.launch {
-            viewModel.updateCart(cart) {
-                // TODO
-            }
+            viewModel.updateCart(cart)
         }
     }
 
-    override fun onIncrement(cart: CartEntity) {
-        cart.productQuantity++
+    override fun onIncrement(cart: Cart) {
+        cart.quantity++
         lifecycleScope.launch {
-            viewModel.updateCart(cart) {
-                viewModel.calculateTotalPrice(viewModel.cartList.value ?: emptyList())
-            }
+            viewModel.updateCart(cart)
         }
     }
 
-    override fun onDecrement(cart: CartEntity) {
-        if (cart.productQuantity > 1) {
-            cart.productQuantity--
+    override fun onDecrement(cart: Cart) {
+        if (cart.quantity > 1) {
+            cart.quantity--
             lifecycleScope.launch {
-                viewModel.updateCart(cart) {
-                    viewModel.calculateTotalPrice(viewModel.cartList.value ?: emptyList())
-                }
+                viewModel.updateCart(cart)
             }
         }
     }

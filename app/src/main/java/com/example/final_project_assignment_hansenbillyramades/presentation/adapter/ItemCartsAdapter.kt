@@ -11,6 +11,7 @@ import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ListItemCartBinding
 import com.example.final_project_assignment_hansenbillyramades.databinding.ListItemProductBinding
+import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemCartListener
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemProductListener
@@ -19,7 +20,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class ItemCartsAdapter(
-    private var listCart: List<CartEntity>,
+    private var listCart: List<Cart>,
     private val listener: ItemCartListener,
     private val showDelete: Boolean,
 ) : RecyclerView.Adapter<ItemCartsAdapter.MyViewHolder>() {
@@ -36,14 +37,14 @@ class ItemCartsAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val cart = listCart[position]
-        holder.binding.tvTitleProduct.text = cart.productName
+        holder.binding.tvTitleProduct.text = cart.cartName
         val formattedPrice =
-            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(cart.productPrice)
+            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(cart.cartPrice)
         holder.binding.tvPrice.text = formattedPrice
-        holder.binding.etQuantity.setText(cart.productQuantity.toString())
+        holder.binding.etQuantity.setText(cart.quantity.toString())
 
         Glide.with(holder.itemView.context)
-            .load(cart.image)
+            .load(cart.cartImage)
             .into(holder.binding.ivProduct)
 
         holder.binding.ivDeleteCart.visibility = if (showDelete) View.VISIBLE else View.GONE
@@ -62,7 +63,7 @@ class ItemCartsAdapter(
     }
 
 
-    fun updateData(newCarts: List<CartEntity>) {
+    fun updateData(newCarts: List<Cart>) {
         listCart = newCarts
         notifyDataSetChanged()
     }

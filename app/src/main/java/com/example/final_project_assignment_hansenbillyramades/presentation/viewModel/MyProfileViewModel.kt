@@ -35,4 +35,8 @@ class MyProfileViewModel @Inject constructor(
             _user.value = User("User not logged in", "", "", null)
         }
     }
+
+    fun logout() {
+        auth.signOut()
+    }
 }

@@ -141,7 +141,6 @@
                     app:layout_constraintStart_toStartOf="@id/menu_card_view_clothes"
                     app:layout_constraintTop_toBottomOf="@id/menu_card_view_clothes" />
 
-                <!--    Card view Menu 2-->
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/menu_card_view_electronics"
@@ -321,41 +320,56 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_list_product"
-                    tools:gridlayout_columns="2"
-                    tools:itemCount="10"
                     tools:listitem="@layout/list_item_product" />
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_list_product">
 
-                    <LinearLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_height="match_parent"
+                        app:orientation="horizontal"
+                        app:columnCount="2">
 
-                        <include layout="@layout/list_item_product_shimmer" />
+                        <include layout="@layout/list_item_product_shimmer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_columnWeight="1"
+                            android:layout_margin="8dp"/>
 
-                        <include layout="@layout/list_item_product_shimmer" />
+                        <include layout="@layout/list_item_product_shimmer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_columnWeight="1"
+                            android:layout_margin="8dp"/>
 
-                        <include layout="@layout/list_item_product_shimmer" />
+                        <include layout="@layout/list_item_product_shimmer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_columnWeight="1"
+                            android:layout_margin="8dp"/>
 
-                        <include layout="@layout/list_item_product_shimmer" />
+                        <include layout="@layout/list_item_product_shimmer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_columnWeight="1"
+                            android:layout_margin="8dp"/>
 
-                    </LinearLayout>
 
-
+                    </androidx.gridlayout.widget.GridLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

@@ -13,7 +13,7 @@
         android:id="@+id/iv_icon_app_on_board"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/icon_ramades_shop_pink"
+        android:src="@drawable/img_stomazon_shop_pink"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/iv_onboard_1"
         app:layout_constraintStart_toStartOf="parent"
