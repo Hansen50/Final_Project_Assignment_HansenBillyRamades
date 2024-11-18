@@ -34,31 +34,20 @@ class CheckoutViewModel @Inject constructor(
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> get() = _cartState
 
-    private val _isCartEmpty = MutableLiveData<Boolean>()
-    val isCartEmpty: LiveData<Boolean> get() = _isCartEmpty
-
     private val _totalPrice = MutableLiveData<Float>()
     val totalPrice: LiveData<Float> get() = _totalPrice
 
     private val _orderState = MutableStateFlow<OrderState>(OrderState.Loading)
     val orderState: StateFlow<OrderState> get() = _orderState
 
-    init {
-        loadCart()
-
-    }
 
     fun loadCart() {
         viewModelScope.launch {
             _cartState.value = CartState.Loading
             try {
-                val cart = cartUseCase.getAllCart() // Mengambil cart dari use case
-                if (cart.isNotEmpty()) {
-                    _cartState.value = CartState.Success(cart)
-                    calculateTotalPrice(cart)
-                } else {
-                    _cartState.value = CartState.Error("Cart is empty")
-                }
+                val cart = cartUseCase.getAllCart()
+                _cartState.value = CartState.Success(cart)
+                calculateTotalPrice(cart)
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Unknown error")
             }
@@ -102,7 +91,7 @@ class CheckoutViewModel @Inject constructor(
             viewModelScope.launch {
                 _orderState.value = OrderState.Loading
                 try {
-                    val totalPrice = _totalPrice.value ?: 0f
+                    val totalPrice = _totalPrice.value ?: 0
                     val cartItems = (cartState.value as? CartState.Success)?.carts ?: emptyList()
                     val email =
                         FirebaseAuth.getInstance().currentUser?.email ?: "default@example.com"
@@ -110,7 +99,7 @@ class CheckoutViewModel @Inject constructor(
                         Log.d("coba", cartItems.toString())
                         Item(
                             id = cartItem.id,
-                            name = cartItem.cartName.take(10),
+                            name = cartItem.cartName.take(20),
                             price = cartItem.cartPrice,
                             quantity = cartItem.quantity
                         )

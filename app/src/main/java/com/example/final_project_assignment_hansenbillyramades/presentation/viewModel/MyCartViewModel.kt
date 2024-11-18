@@ -20,39 +20,40 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyCartViewModel @Inject constructor(
-    private val db: StomazonDatabase,
-    private val cartUseCase: CartUeCase,
+    private val cartUseCase: CartUeCase
 ) : ViewModel() {
 
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> get() = _cartState
 
-    private val _isCartEmpty = MutableLiveData<Boolean>()
-    val isCartEmpty: LiveData<Boolean> get() = _isCartEmpty
-
-    private val _totalPrice = MutableLiveData<Float>()
-    val totalPrice: LiveData<Float> get() = _totalPrice
-
-    init {
-        loadCart()
-    }
+    private val _totalPrice = MutableStateFlow(0f)
+    val totalPrice: StateFlow<Float> get() = _totalPrice
 
     fun loadCart() {
         viewModelScope.launch {
             _cartState.value = CartState.Loading
             try {
-                val cart = cartUseCase.getAllCart() // Mengambil cart dari use case
-                if (cart.isNotEmpty()) {
-                    _cartState.value = CartState.Success(cart)
-                    calculateTotalPrice(cart)
-                    _isCartEmpty.value = false
-                } else {
-                    _cartState.value = CartState.Error("Cart is empty")
-                    _isCartEmpty.value = true
-                }
+                val cart = cartUseCase.getAllCart()
+                _cartState.value = CartState.Success(cart)
+                calculateTotalPrice(cart)
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Unknown error")
-                _isCartEmpty.value = true
+            }
+        }
+    }
+
+    private fun calculateTotalPrice(cartList: List<Cart>) {
+        val total = cartList.sumOf { it.cartPrice * it.quantity }
+        _totalPrice.value = total.toFloat()
+    }
+
+    fun deleteCart(cart: Cart) {
+        viewModelScope.launch {
+            try {
+                cartUseCase.deleteCart(cart)
+                loadCart()
+            } catch (e: Exception) {
+                _cartState.value = CartState.Error(e.message ?: "Failed to delete cart")
             }
         }
     }
@@ -61,28 +62,9 @@ class MyCartViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 cartUseCase.updateCart(cart)
-                loadCart()  // Memuat ulang cart setelah update
+                loadCart()
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Failed to update cart")
-            }
-        }
-    }
-
-    fun calculateTotalPrice(cartList: List<Cart>) {
-        var total = 0f
-        cartList.forEach {
-            total += it.cartPrice * it.quantity
-        }
-        _totalPrice.value = total
-    }
-
-    fun deleteCart(cart: Cart) {
-        viewModelScope.launch {
-            try {
-                cartUseCase.deleteCart(cart)
-                loadCart()  // Memuat ulang cart setelah penghapusan
-            } catch (e: Exception) {
-                _cartState.value = CartState.Error(e.message ?: "Failed to delete cart item")
             }
         }
     }

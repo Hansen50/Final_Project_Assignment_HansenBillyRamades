@@ -82,8 +82,6 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
                         binding.shimmerLayout.startShimmer()
                         binding.shimmerLayout.isVisible = true
                         binding.rvProducts.isVisible = false
-                        Toast.makeText(this@SearchProductsActivity, "Loading", Toast.LENGTH_SHORT)
-                            .show()
                     }
 
                     is ProductsState.Success -> {

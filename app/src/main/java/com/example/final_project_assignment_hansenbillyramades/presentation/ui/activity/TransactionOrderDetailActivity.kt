@@ -29,7 +29,6 @@ import java.util.Locale
 class TransactionOrderDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTransactionOrderDetailBinding
     private val viewModel: TransactionOrderDetailViewModel by viewModels()
-    private lateinit var adapter: ItemProductsTransactionOrderDetailAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -42,6 +42,8 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         supportActionBar?.title = "Checkout"
 
         cartRecyclerView()
+        viewModel.loadCart()
+        observeTotalPrice()
 
         lifecycleScope.launch {
             viewModel.cartState.collect { cartState ->
@@ -64,9 +66,6 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                 }
             }
         }
-
-        viewModel.loadCart()
-        observeTotalPrice()
 
         binding.cardMenuAddress.setOnClickListener {
             val intent = Intent(this@CheckoutActivity, ChooseAddressActivity::class.java)

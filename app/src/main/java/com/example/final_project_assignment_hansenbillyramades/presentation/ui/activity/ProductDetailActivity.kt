@@ -35,12 +35,12 @@ class ProductDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
-        supportActionBar?.title = "Product Detail"
 
         val productId = intent.getIntExtra("id_product", 0)
         Log.d("ProductDetailActivity", "Product ID: $productId")
 
         binding.ivCart.setOnClickListener {
+            Log.d("ProductDetailActivity", "ivCart clicked")
             val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
             intent.putExtra("navigateTo", "MyCartFragment")
             startActivity(intent)
@@ -102,7 +102,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     viewModel.addCart(cart)
                     Toast.makeText(
                         this@ProductDetailActivity,
-                        "${product.name} Success added to cart",
+                        "Success added to cart",
                         Toast.LENGTH_SHORT
                     ).show()
                     val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)

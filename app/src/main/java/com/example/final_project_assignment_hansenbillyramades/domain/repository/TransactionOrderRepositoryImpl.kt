@@ -48,7 +48,8 @@ fun TransactionOrderDetailResponse.Data.Detail.OdProduct.toDomainModel(): Transa
         id = this.id ?: 0,
         name = this.name.orEmpty(),
         price = this.price ?: 0,
-        quantity = this.quantity ?: 0
+        quantity = this.quantity ?: 0,
+        image = this.imageUrl?.pdImageUrl.orEmpty(),
     )
 }
 

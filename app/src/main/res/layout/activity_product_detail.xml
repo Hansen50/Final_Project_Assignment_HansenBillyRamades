@@ -13,32 +13,54 @@
         android:id="@+id/toolbar_product_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
+        android:background="@drawable/bottom_nav_background"
         app:layout_constraintBottom_toTopOf="@id/nested_scroll_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed" />
+        app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
-    <ImageView
-        android:id="@+id/iv_cart"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_cart_outline"
-        app:layout_constraintBottom_toBottomOf="@id/toolbar_product_detail"
-        app:layout_constraintEnd_toStartOf="@id/iv_share"
-        app:layout_constraintTop_toTopOf="@id/toolbar_product_detail" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_share"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_share_outline"
-        app:layout_constraintBottom_toBottomOf="@id/toolbar_product_detail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/toolbar_product_detail" />
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Product Detail"
+                android:textColor="@color/oil_black"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_cart"/>
+
+            <ImageView
+                android:id="@+id/iv_cart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_cart_outline"
+                app:layout_constraintEnd_toStartOf="@id/iv_share"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_share"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_share_outline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
@@ -260,9 +282,8 @@
             android:id="@+id/btn_cart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
             android:background="@drawable/button_background_secondary"
-            android:text="Cart"
+            android:text="Add to cart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

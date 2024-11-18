@@ -27,18 +27,15 @@ class HomeViewModel @Inject constructor(
     private val _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
 
-    private val _selectedProduct = MutableLiveData<Products?>()
-    val selectedProduct: LiveData<Products?> get() = _selectedProduct
-
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    var currentLimit = 4
+    //var currentLimit = 4
 
     private var isLoading = false
 
 
     init {
-        loadAllProducts(null, currentLimit)
+        loadAllProducts(null, null)
         getUserInfo()
     }
 
@@ -79,7 +76,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun increaseLimit() {
-        currentLimit += 4// Atur jumlah produk per halaman (misalnya menambah 5)
-    }
+//    fun increaseLimit() {
+//        currentLimit += 4// Atur jumlah produk per halaman (misalnya menambah 5)
+//    }
 }

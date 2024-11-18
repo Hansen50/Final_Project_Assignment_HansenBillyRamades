@@ -88,8 +88,6 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
                         binding.shimmerLayout.startShimmer()
                         binding.shimmerLayout.isVisible = true
                         binding.rvProductsCategory.isVisible = false
-                        Toast.makeText(this@CategoryProductActivity, "Loading", Toast.LENGTH_SHORT)
-                            .show()
                     }
 
                     is ProductsState.Success -> {

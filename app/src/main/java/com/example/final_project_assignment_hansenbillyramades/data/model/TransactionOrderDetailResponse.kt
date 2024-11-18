@@ -38,13 +38,20 @@ data class TransactionOrderDetailResponse(
             data class OdProduct(
                 @SerializedName("id")
                 val id: Int?,
+                @SerializedName("image_url")
+                val imageUrl: ImageUrl?,
                 @SerializedName("name")
                 val name: String?,
                 @SerializedName("price")
                 val price: Int?,
                 @SerializedName("quantity")
                 val quantity: Int?
-            )
+            ) {
+                data class ImageUrl(
+                    @SerializedName("pd_image_url")
+                    val pdImageUrl: String?
+                )
+            }
         }
     }
 }

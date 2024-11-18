@@ -97,8 +97,7 @@ class HomeFragment : Fragment(), ItemProductListener {
 
                     if (!isLoading && totalItemCount <= (lastVisibleItemPosition + 5)) {
                         isLoading = true
-                        viewModel.increaseLimit()
-                        viewModel.loadAllProducts(null, viewModel.currentLimit)
+                        viewModel.loadAllProducts(null, null)
                     }
                 }
             })
@@ -123,8 +122,6 @@ class HomeFragment : Fragment(), ItemProductListener {
                                 binding.shimmerLayout.isVisible = true
                                 binding.rvProducts.isVisible = false
                                 binding.swipeRefreshLayout.isRefreshing = true
-                                Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT)
-                                    .show()
                             }
 
                             is ProductsState.Success -> {

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,13 +31,12 @@ import java.util.Locale
 class MyCartFragment : Fragment(), ItemCartListener {
     private var _binding: FragmentMyCartBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: ItemCartsAdapter
-
     private val viewModel: MyCartViewModel by viewModels()
+    private lateinit var adapter: ItemCartsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMyCartBinding.inflate(inflater, container, false)
         return binding.root
@@ -45,42 +45,30 @@ class MyCartFragment : Fragment(), ItemCartListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        observeTotalPrice()
         viewModel.loadCart()
+        observeTotalPrice()
 
         lifecycleScope.launch {
             viewModel.cartState.collect { cartState ->
                 when (cartState) {
                     is CartState.Loading -> {
-                        //TODO
+                        binding.rvCart.isVisible = false
                     }
-
                     is CartState.Success -> {
-                        adapter.updateData(cartState.carts)
+                        val carts = cartState.carts
+                        adapter.updateData(carts)
+                        binding.rvCart.isVisible = true
                     }
-
                     is CartState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "${cartState.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        binding.rvCart.isVisible = false
+                        Toast.makeText(requireContext(), cartState.message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
 
         binding.btnCheckout.setOnClickListener {
-            // Mengecek apakah cart kosong
-            if (viewModel.isCartEmpty.value == true) {
-                // Jika cart kosong, tampilkan toast
-                Toast.makeText(requireContext(), "Your cart is empty.", Toast.LENGTH_SHORT).show()
-            } else {
-                // Jika cart tidak kosong, lanjutkan ke CheckoutActivity
-                val intent = Intent(requireContext(), CheckoutActivity::class.java)
-                startActivity(intent)
-            }
-        }
+            handleCheckout() }
     }
 
     private fun setupRecyclerView() {
@@ -89,40 +77,45 @@ class MyCartFragment : Fragment(), ItemCartListener {
         binding.rvCart.adapter = adapter
     }
 
-
     private fun observeTotalPrice() {
-        viewModel.totalPrice.observe(viewLifecycleOwner) { total ->
-            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
-            binding.tvNumberTotalPrice.text = formattedTotal
+        lifecycleScope.launch {
+            viewModel.totalPrice.collect { total ->
+                val formattedTotal =
+                    NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
+                binding.tvNumberTotalPrice.text = formattedTotal
+            }
+        }
+    }
+
+    private fun handleCheckout() {
+        val cartState = viewModel.cartState.value
+        if (cartState is CartState.Success && cartState.carts.isNotEmpty()) {
+            val intent = Intent(requireContext(), CheckoutActivity::class.java)
+            startActivity(intent)
+        } else {
+            Toast.makeText(requireContext(), "Your cart is empty.", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onDelete(cart: Cart) {
-        lifecycleScope.launch {
-            viewModel.deleteCart(cart)
-        }
+        viewModel.deleteCart(cart)
     }
 
     override fun onUpdateQuantity(cart: Cart) {
-        lifecycleScope.launch {
-            viewModel.updateCart(cart)
-        }
+        viewModel.updateCart(cart)
     }
 
     override fun onIncrement(cart: Cart) {
         cart.quantity++
-        lifecycleScope.launch {
-            viewModel.updateCart(cart)
-        }
+        viewModel.updateCart(cart)
     }
 
     override fun onDecrement(cart: Cart) {
         if (cart.quantity > 1) {
             cart.quantity--
-            lifecycleScope.launch {
-                viewModel.updateCart(cart)
-            }
+            viewModel.updateCart(cart)
         }
     }
 }
+
 

@@ -42,6 +42,11 @@ class ItemProductsTransactionOrderDetailAdapter(
         holder.binding.tvTitleProduct.text = order.name
         holder.binding.tvPrice.text = formattedPrice
         holder.binding.tvQuantityTransactionDetailNumber.text = "${order.quantity}"
+
+        Glide.with(holder.itemView.context)
+            .load(order.image)
+//            .placeholder(R.drawable.placeholder_image)
+            .into(holder.binding.ivProduct)
     }
 
 
