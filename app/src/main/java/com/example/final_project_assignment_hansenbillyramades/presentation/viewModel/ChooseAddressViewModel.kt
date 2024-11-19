@@ -22,9 +22,6 @@ class ChooseAddressViewModel @Inject constructor(
     private val _addressList = MutableLiveData<List<AddressEntity>>()
     val addressList: LiveData<List<AddressEntity>> get() = _addressList
 
-    init {
-        loadAddress()
-    }
 
     fun loadAddress() {
         viewModelScope.launch {

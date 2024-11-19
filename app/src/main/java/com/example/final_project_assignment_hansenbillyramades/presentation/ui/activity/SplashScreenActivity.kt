@@ -1,23 +1,23 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivitySplashScreenBinding
-import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.SplashScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashScreenBinding
-    private val viewModel: SplashScreenViewModel by viewModels()
+
+    @Inject
+    lateinit var preferenceDataStore: PreferenceDataStore // Injeksi PreferenceDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +25,21 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         lifecycleScope.launch {
-            viewModel.nextActivity.collectLatest { nextActivity ->
-                Log.d("SplashScreenActivity", "Navigating to: $nextActivity")
-                val intent = Intent(this@SplashScreenActivity, nextActivity)
-                startActivity(intent)
-                finish()
+            delay(1500L)
+            val isLoggedIn = preferenceDataStore.isUserLoggedIn()
+            val isOnboarded = preferenceDataStore.getUserOnboarded()
+
+            Log.d("SplashScreen", "isLoggedIn: $isLoggedIn, isOnboarded: $isOnboarded")
+
+            val nextActivity = when {
+                isLoggedIn && isOnboarded -> MainActivity::class.java
+                isLoggedIn && !isOnboarded -> OnBoardActivity::class.java
+                else -> LoginActivity::class.java
             }
+
+            val intent = Intent(this@SplashScreenActivity, nextActivity)
+            startActivity(intent)
+            finish()
         }
-        viewModel.checkStatusLoginAndOnBoard()
     }
 }

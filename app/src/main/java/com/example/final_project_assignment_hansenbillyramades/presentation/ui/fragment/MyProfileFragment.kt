@@ -6,18 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentMyProfileBinding
+import com.example.final_project_assignment_hansenbillyramades.domain.model.UserState
 import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.LoginActivity
-import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.HomeViewModel
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyProfileViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyProfileFragment : Fragment() {
@@ -35,6 +37,8 @@ class MyProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getUserInfo()
 
         binding.btnLogout.setOnClickListener {
             val alertDialog = AlertDialog.Builder(requireContext())
@@ -55,19 +59,34 @@ class MyProfileFragment : Fragment() {
             alertDialog.show()
         }
 
-        viewModel.user.observe(viewLifecycleOwner) { userInfo ->
-            binding.tvNameUser.text = userInfo.name
-            binding.tvEmail.text = userInfo.email
-            binding.tvPhone.text = userInfo.phone
+        lifecycleScope.launch {
+            viewModel.userState.collect(object : FlowCollector<UserState> {
+                override suspend fun emit(value: UserState) {
+                    when (value) {
+                        is UserState.Error -> {
+                            Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT).show()
+                        }
+                        is UserState.Loading -> {
+                            Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
+                        }
+                        is UserState.Success -> {
+                                binding.tvNameUser.text = value.user.name
+                                binding.tvEmail.text = value.user.email
+                                binding.tvPhone.text = value.user.phone
 
-            if (userInfo.photoUrl != null) {
-                Glide.with(requireContext())
-                    .load(userInfo.photoUrl)
-                    .circleCrop()
-                    .into(binding.ivProfile)
-            } else {
-                binding.ivProfile.setImageResource(R.drawable.ic_default_profile)
-            }
+                                if (value.user.photoUrl != null) {
+                                    Glide.with(requireContext())
+                                        .load(value.user.photoUrl)
+                                        .circleCrop()
+                                        .into(binding.ivProfile)
+                                } else {
+                                    binding.ivProfile.setImageResource(R.drawable.ic_default_profile)
+                                }
+                        }
+                    }
+                }
+
+            })
         }
     }
 

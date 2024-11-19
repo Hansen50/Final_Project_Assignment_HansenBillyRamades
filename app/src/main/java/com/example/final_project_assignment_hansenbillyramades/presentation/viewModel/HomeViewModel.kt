@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
+import com.example.final_project_assignment_hansenbillyramades.domain.model.UserState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.User
+import com.example.final_project_assignment_hansenbillyramades.domain.usecase.GetUserInfoUseCase
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.ListProductUseCase
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,25 +19,21 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val listProductUseCase: ListProductUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase
 ) : ViewModel() {
 
     private val _productState = MutableStateFlow<ProductsState>(ProductsState.Loading)
     val productsState: StateFlow<ProductsState> = _productState.asStateFlow()
 
+
+    private val _userState = MutableStateFlow<UserState>(UserState.Loading)
+    val userState: StateFlow<UserState> = _userState
+
     private val _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    //var currentLimit = 4
 
     private var isLoading = false
-
-
-    init {
-        loadAllProducts(null, null)
-        getUserInfo()
-    }
 
     fun loadAllProducts(name: String?, limit: Int?) {
         if (isLoading) return
@@ -61,22 +57,18 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    private fun getUserInfo() {
-        val user = auth.currentUser
-        if (user != null) {
-            val displayName = user.displayName
-            val firstName = displayName?.split(" ")?.firstOrNull() ?: "No name available"
-            val email = user.email ?: "No email available"
-            val phone = user.phoneNumber ?: "No phone available"
-            val photoUrl = user.photoUrl
-
-            _user.value = User(firstName, email, phone, null)
-        } else {
-            _user.value = User("User not logged in", "", "", null)
+    fun getUserInfo() {
+        viewModelScope.launch {
+            try {
+                val user = getUserInfoUseCase()
+                if (user != null) {
+                    _userState.value = UserState.Success(user)
+                } else {
+                    _userState.value = UserState.Error("User not logged in")
+                }
+            } catch (e: Exception) {
+                _userState.value = UserState.Error(e.message ?: "Error")
+            }
         }
     }
-
-//    fun increaseLimit() {
-//        currentLimit += 4// Atur jumlah produk per halaman (misalnya menambah 5)
-//    }
 }

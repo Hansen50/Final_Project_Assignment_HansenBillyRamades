@@ -56,8 +56,20 @@ class MyCartFragment : Fragment(), ItemCartListener {
                     }
                     is CartState.Success -> {
                         val carts = cartState.carts
+                        if (carts.isEmpty()) {
+                            binding.rvCart.isVisible = false
+                            binding.ivNoCart.isVisible = true
+                            binding.tvNoCart.isVisible = true
+                            binding.tvNoCartDetail.isVisible = true
+                            binding.bottomButtons.isVisible = false
+                        } else {
+                            binding.rvCart.isVisible = true
+                            binding.ivNoCart.isVisible = false
+                            binding.tvNoCart.isVisible = false
+                            binding.tvNoCartDetail.isVisible = false
+                            binding.bottomButtons.isVisible = true
+                        }
                         adapter.updateData(carts)
-                        binding.rvCart.isVisible = true
                     }
                     is CartState.Error -> {
                         binding.rvCart.isVisible = false

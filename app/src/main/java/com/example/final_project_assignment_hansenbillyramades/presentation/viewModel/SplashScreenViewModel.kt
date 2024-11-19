@@ -1,5 +1,7 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.viewModel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
@@ -18,20 +20,21 @@ class SplashScreenViewModel @Inject constructor(
     private val preferenceDataStore: PreferenceDataStore
 ) : ViewModel() {
 
-    private val _nextActivity = MutableStateFlow<Class<*>>(LoginActivity::class.java)
-    val nextActivity = _nextActivity.asStateFlow()
+    private val _nextActivity = MutableLiveData<Class<*>>(LoginActivity::class.java) // Menggunakan LiveData agar bisa ter-observe
+    val nextActivity: LiveData<Class<*>> = _nextActivity
 
     fun checkStatusLoginAndOnBoard() {
         viewModelScope.launch {
-            delay(5000L)
+            delay(3000L) // Waktu delay untuk splash screen
             val isLoggedIn = preferenceDataStore.isUserLoggedIn()
             val isOnboarded = preferenceDataStore.getUserOnboarded()
 
             _nextActivity.value = when {
-                isLoggedIn && isOnboarded -> MainActivity::class.java
-                isLoggedIn && !isOnboarded -> OnBoardActivity::class.java
-                else -> LoginActivity::class.java
+                isLoggedIn && isOnboarded -> MainActivity::class.java // Sudah login dan onboarded
+                isLoggedIn && !isOnboarded -> OnBoardActivity::class.java // Sudah login tapi belum onboarded
+                else -> LoginActivity::class.java // Belum login
             }
         }
     }
 }
+

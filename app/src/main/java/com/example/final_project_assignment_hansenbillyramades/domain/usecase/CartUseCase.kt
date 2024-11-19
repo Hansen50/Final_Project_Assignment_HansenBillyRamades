@@ -4,7 +4,7 @@ import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.CartRepository
 import javax.inject.Inject
 
-class CartUeCase @Inject constructor(
+class CartUseCase @Inject constructor(
     private val cartRepository: CartRepository
 ) {
 

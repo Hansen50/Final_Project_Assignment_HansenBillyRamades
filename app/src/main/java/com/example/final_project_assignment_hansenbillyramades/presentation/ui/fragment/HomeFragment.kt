@@ -9,15 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentHomeBinding
+import com.example.final_project_assignment_hansenbillyramades.domain.model.UserState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemProductsAdapter
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemProductListener
@@ -49,6 +46,8 @@ class HomeFragment : Fragment(), ItemProductListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getUserInfo()
+
         binding.searchBarProduct.setOnClickListener {
             val intent = Intent(requireContext(), SearchProductsActivity::class.java)
             startActivity(intent)
@@ -74,8 +73,23 @@ class HomeFragment : Fragment(), ItemProductListener {
             navigateToCategoryActivity("MISC")
         }
 
-        viewModel.user.observe(viewLifecycleOwner) { userInfo ->
-            binding.tvUserName.text = userInfo.name
+        lifecycleScope.launch {
+            viewModel.userState.collect(object : FlowCollector<UserState> {
+                override suspend fun emit(value: UserState) {
+                    when (value) {
+                        is UserState.Error -> {
+                            Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT).show()
+                        }
+                        is UserState.Loading -> {
+                            Toast.makeText(requireContext(), "Failed to load user data, please check your internet connection", Toast.LENGTH_SHORT).show()
+                        }
+                        is UserState.Success -> {
+                            binding.tvUserName.text = value.user.name
+                        }
+                    }
+                }
+
+            })
         }
 
         lifecycleScope.launch {
@@ -112,7 +126,7 @@ class HomeFragment : Fragment(), ItemProductListener {
                                 binding.shimmerLayout.isVisible = true
                                 binding.rvProducts.isVisible = false
                                 binding.swipeRefreshLayout.isRefreshing = false
-                                Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT)
+                                Toast.makeText(requireContext(), "Failed to load data product, please check your internet connection", Toast.LENGTH_SHORT)
                                     .show()
                                 isLoading = false
                             }

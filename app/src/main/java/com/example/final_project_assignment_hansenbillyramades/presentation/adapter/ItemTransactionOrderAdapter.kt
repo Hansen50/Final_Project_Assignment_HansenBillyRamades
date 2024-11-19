@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.final_project_assignment_hansenbillyramades.databinding.ListItemTransactionBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.TransactionOrder
-import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemProductsAdapter.MyViewHolder
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemTransactionOrderListener
 import java.text.NumberFormat
 import java.util.Locale
@@ -44,7 +43,7 @@ class ItemTransactionOrderAdapter(
         }
     }
 
-    fun submitList(newList: List<TransactionOrder>) {
+    fun updateData(newList: List<TransactionOrder>) {
         listTransactionOrder = newList
         notifyDataSetChanged()
     }

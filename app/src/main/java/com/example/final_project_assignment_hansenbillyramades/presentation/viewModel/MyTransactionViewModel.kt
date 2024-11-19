@@ -25,11 +25,7 @@ class MyTransactionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val transactionOrder = getListTransactionOrderUseCase()
-                _transactionOrderState.value = if (transactionOrder.isNotEmpty()) {
-                    TransactionOrderState.Success(transactionOrder)
-                } else {
-                    TransactionOrderState.Error("No Transaction")
-                }
+                _transactionOrderState.value = TransactionOrderState.Success(transactionOrder)
             } catch (e: Exception) {
                 _transactionOrderState.value = TransactionOrderState.Error(e.message ?: "Error")
             }

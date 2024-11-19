@@ -6,17 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.final_project_assignment_hansenbillyramades.R
-import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentMyCartBinding
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentMyTransactionsBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.TransactionOrderState
 import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ItemTransactionOrderAdapter
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemTransactionOrderListener
-import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.ProductDetailActivity
 import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.TransactionOrderDetailActivity
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyTransactionViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,11 +50,12 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
                 viewModel.transactionOrderState.collect(object :
                     FlowCollector<TransactionOrderState> {
                     override suspend fun emit(value: TransactionOrderState) {
-                        when(value) {
+                        when (value) {
                             is TransactionOrderState.Error -> {
-                                binding.shimmerLayout.startShimmer()
-                                binding.shimmerLayout.isVisible = true
+                                binding.shimmerLayout.stopShimmer()
+                                binding.shimmerLayout.isVisible = false
                                 binding.rvMyTransaction.isVisible = false
+                                Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT).show()
                             }
                             is TransactionOrderState.Loading -> {
                                 binding.shimmerLayout.startShimmer()
@@ -64,10 +63,22 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
                                 binding.rvMyTransaction.isVisible = false
                             }
                             is TransactionOrderState.Success -> {
+                                val orders = value.transactionOrder
                                 binding.shimmerLayout.stopShimmer()
                                 binding.shimmerLayout.isVisible = false
-                                binding.rvMyTransaction.isVisible = true
-                                adapter.submitList(value.transactionOrder)
+                                if (orders.isEmpty()) {
+                                    binding.shimmerLayout.stopShimmer()
+                                    binding.shimmerLayout.isVisible = false
+                                    binding.ivNoOrder.isVisible = true
+                                    binding.tvNoOrder.isVisible = true
+                                    binding.tvNoOrderDetail.isVisible = true
+                                } else {
+                                    binding.ivNoOrder.isVisible = false
+                                    binding.tvNoOrder.isVisible = false
+                                    binding.tvNoOrderDetail.isVisible = false
+                                    binding.rvMyTransaction.isVisible = true
+                                    adapter.updateData(value.transactionOrder)
+                                }
                             }
 
                             else -> {}

@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
@@ -18,7 +19,7 @@ object DataStoreConstant {
     val IS_ONBOARDED = booleanPreferencesKey("IS_ONBOARDED")
 }
 
-class PreferenceDataStore private constructor(private val dataStore: DataStore<Preferences>) {
+class PreferenceDataStore constructor(private val dataStore: DataStore<Preferences>) {
 
 
     suspend fun setOnboardedStatus(onboarded: Boolean) {
@@ -33,12 +34,14 @@ class PreferenceDataStore private constructor(private val dataStore: DataStore<P
 
     suspend fun setUserLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences -> preferences[DataStoreConstant.IS_LOGIN] = isLoggedIn }
-        Log.d("PreferenceDataStore", "User logged in: $isLoggedIn")
     }
 
     suspend fun isUserLoggedIn(): Boolean {
         return withContext(Dispatchers.IO) {
-            dataStore.data.first()[DataStoreConstant.IS_LOGIN] ?: false
+            val preferences = dataStore.data.first()
+            val isLoggedIn = preferences[DataStoreConstant.IS_LOGIN] ?: false
+            Log.d("PreferenceDataStore", "isUserLoggedIn: $isLoggedIn")
+            isLoggedIn
         }
     }
 

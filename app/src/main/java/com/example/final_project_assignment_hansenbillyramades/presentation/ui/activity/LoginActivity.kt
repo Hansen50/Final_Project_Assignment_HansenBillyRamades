@@ -102,12 +102,17 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         lifecycleScope.launch {
-                            Toast.makeText(this@LoginActivity, "Login Success", Toast.LENGTH_SHORT)
-                                .show()
                             preferenceDataStore.setUserLoggedIn(true)
-                            val intent = Intent(this@LoginActivity, OnBoardActivity::class.java)
+                            val isOnboarded = preferenceDataStore.getUserOnboarded()
+                            val intent = if (isOnboarded) {
+                                Intent(this@LoginActivity, MainActivity::class.java)
+                            } else {
+                                Intent(this@LoginActivity, OnBoardActivity::class.java)
+                            }
+
                             startActivity(intent)
                             finish()
+                            Toast.makeText(this@LoginActivity, "Login Success", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         Toast.makeText(
@@ -123,6 +128,7 @@ class LoginActivity : AppCompatActivity() {
             resetButtonState()
         }
     }
+
 
     private fun resetButtonState() {
         binding.loadingLayout.isVisible = false

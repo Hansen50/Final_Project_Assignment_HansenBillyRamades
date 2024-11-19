@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,6 +56,9 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
             viewModel.transactionOrderState.collect { state ->
                 when (state) {
                     is TransactionOrderState.Error -> {
+                        binding.shimmerLayout.startShimmer()
+                        binding.shimmerLayout.isVisible = true
+                        binding.rvProductOrdered.isVisible = false
                         Toast.makeText(
                             this@TransactionOrderDetailActivity,
                             "Error: ${state.message}",
@@ -63,6 +67,9 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
                     }
 
                     is TransactionOrderState.Loading -> {
+                        binding.shimmerLayout.startShimmer()
+                        binding.shimmerLayout.isVisible = true
+                        binding.rvProductOrdered.isVisible = false
                         Toast.makeText(
                             this@TransactionOrderDetailActivity,
                             "Loading...",
@@ -77,6 +84,10 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
                         binding.tvPaymentStatus.text = order.status
                         binding.tvTotalPriceOrderNumber.text = formattedPriceToRupiah
                         adapter.updateData(order.products)
+
+                        binding.shimmerLayout.stopShimmer()
+                        binding.shimmerLayout.isVisible = false
+                        binding.rvProductOrdered.isVisible = true
                     }
 
                     else -> {

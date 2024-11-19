@@ -5,17 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.CartState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Item
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Order
 import com.example.final_project_assignment_hansenbillyramades.domain.model.OrderState
-import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.OrderRepository
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.ProductRepository
-import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUeCase
+import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +25,7 @@ import javax.inject.Inject
 class CheckoutViewModel @Inject constructor(
     private val repository: ProductRepository,
     private val orderRepository: OrderRepository,
-    private val cartUseCase: CartUeCase,
+    private val cartUseCase: CartUseCase,
     private val db: StomazonDatabase,
 ) : ViewModel() {
 
@@ -80,7 +78,7 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 cartUseCase.deleteCart(cart)
-                loadCart()  // Memuat ulang cart setelah penghapusan
+                loadCart()
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Failed to delete cart item")
             }
@@ -99,7 +97,7 @@ class CheckoutViewModel @Inject constructor(
                         Log.d("coba", cartItems.toString())
                         Item(
                             id = cartItem.id,
-                            name = cartItem.cartName.take(20),
+                            name = cartItem.cartName.take(50),
                             price = cartItem.cartPrice,
                             quantity = cartItem.quantity
                         )

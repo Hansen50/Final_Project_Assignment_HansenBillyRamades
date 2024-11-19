@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
-import com.example.final_project_assignment_hansenbillyramades.domain.repository.ProductRepository
-import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUeCase
+import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUseCase
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.GetProductByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     private val getProductByIdUseCase: GetProductByIdUseCase,
-    private val cartUseCase: CartUeCase,
+    private val cartUseCase: CartUseCase,
     private val db: StomazonDatabase,
 
     ) : ViewModel() {
@@ -59,6 +57,7 @@ class ProductDetailViewModel @Inject constructor(
                     )
                 )
             } catch (e: Exception) {
+                _productState.value = ProductsState.Error("Error: ${e.message}")
             }
         }
     }
