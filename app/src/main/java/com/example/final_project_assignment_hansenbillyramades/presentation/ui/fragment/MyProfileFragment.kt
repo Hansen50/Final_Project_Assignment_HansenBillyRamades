@@ -29,7 +29,7 @@ class MyProfileFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMyProfileBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,55 +39,65 @@ class MyProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getUserInfo()
+        observeUserData()
 
         binding.btnLogout.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(requireContext())
-            alertDialog.setTitle("Logout")
-            alertDialog.setMessage("Are you sure want to logout?")
-
-            alertDialog.setPositiveButton("Yes") { dialog: DialogInterface, which: Int ->
-                viewModel.logout()
-                dialog.dismiss()
-                logout()
-            }
-
-            alertDialog.setNegativeButton("No") { dialog: DialogInterface, which: Int ->
-                dialog.dismiss()
-            }
-
-            alertDialog.setCancelable(false)
-            alertDialog.show()
+            dialogBoxConfirmationLogout()
         }
+    }
 
+    private fun observeUserData() {
         lifecycleScope.launch {
             viewModel.userState.collect(object : FlowCollector<UserState> {
                 override suspend fun emit(value: UserState) {
                     when (value) {
                         is UserState.Error -> {
-                            Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
+
                         is UserState.Loading -> {
                             Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                         }
-                        is UserState.Success -> {
-                                binding.tvNameUser.text = value.user.name
-                                binding.tvEmail.text = value.user.email
-                                binding.tvPhone.text = value.user.phone
 
-                                if (value.user.photoUrl != null) {
-                                    Glide.with(requireContext())
-                                        .load(value.user.photoUrl)
-                                        .circleCrop()
-                                        .into(binding.ivProfile)
-                                } else {
-                                    binding.ivProfile.setImageResource(R.drawable.ic_default_profile)
-                                }
+                        is UserState.Success -> {
+                            binding.tvNameUser.text = value.user.name
+                            binding.tvEmail.text = value.user.email
+                            binding.tvPhone.text = value.user.phone
+
+                            if (value.user.photoUrl != null) {
+                                Glide.with(requireContext())
+                                    .load(value.user.photoUrl)
+                                    .circleCrop()
+                                    .into(binding.ivProfile)
+                            } else {
+                                binding.ivProfile.setImageResource(R.drawable.ic_default_profile)
+                            }
                         }
                     }
                 }
 
             })
         }
+    }
+
+    private fun dialogBoxConfirmationLogout() {
+        val alertDialog = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("Logout")
+        alertDialog.setMessage("Are you sure want to logout?")
+
+        alertDialog.setPositiveButton("Yes") { dialog: DialogInterface, which: Int ->
+            viewModel.logout()
+            dialog.dismiss()
+            logout()
+        }
+
+        alertDialog.setNegativeButton("No") { dialog: DialogInterface, which: Int ->
+            dialog.dismiss()
+        }
+
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun logout() {

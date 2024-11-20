@@ -26,93 +26,104 @@ import kotlinx.coroutines.launch
 class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
     private lateinit var binding: ActivityCategoryProductBinding
     private val viewModel: CategoryProductViewModel by viewModels()
+    private lateinit var adapter: ItemProductsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCategoryProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbarProductCategory)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
-        val categoryName = intent.getStringExtra("CATEGORY_NAME") ?: ""
+        setupActionBar()
+        setupRecyclerView()
 
+        val categoryName = intent.getStringExtra("CATEGORY_NAME") ?: ""
         if (categoryName.isEmpty()) {
-            Toast.makeText(this, "No category selected", Toast.LENGTH_SHORT).show()
+            showToast("No category selected")
             finish()
             return
         }
-        supportActionBar?.title = categoryName
+        fetchProductsByCategory(categoryName)
+        setupSearchView(categoryName)
+        observeProductState()
+    }
 
-        val adapter = ItemProductsAdapter(mutableListOf(), this@CategoryProductActivity)
-        binding.rvProductsCategory.layoutManager =
-            GridLayoutManager(this@CategoryProductActivity, 2)
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolbarProductCategory)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ItemProductsAdapter(mutableListOf(), this)
+        binding.rvProductsCategory.layoutManager = GridLayoutManager(this, 2)
         binding.rvProductsCategory.adapter = adapter
-        viewModel.getProductsByCategory(categoryName, "")
+    }
 
-        binding.svSearchProducCategory.setOnQueryTextListener(object :
-            SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(search: String?): Boolean {
-                if (!search.isNullOrEmpty()) {
-                    viewModel.getProductsByCategory(categoryName, search)
+    private fun setupSearchView(categoryName: String) {
+        binding.svSearchProducCategory.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrEmpty()) {
+                    fetchProductsByCategory(categoryName, query)
                 }
                 binding.svSearchProducCategory.clearFocus()
                 return true
             }
 
-            override fun onQueryTextChange(newSearch: String?): Boolean {
-                if (newSearch.isNullOrEmpty()) {
-                    viewModel.getProductsByCategory(categoryName, null)
+            override fun onQueryTextChange(query: String?): Boolean {
+                if (query.isNullOrEmpty()) {
+                    fetchProductsByCategory(categoryName, null)
                 }
                 return true
             }
         })
+    }
 
+    private fun fetchProductsByCategory(categoryName: String, search: String? = "") {
+        viewModel.getProductsByCategory(categoryName, search)
+    }
 
+    private fun observeProductState() {
         lifecycleScope.launch {
-            viewModel.productsState.collect { value ->
-                when (value) {
-                    is ProductsState.Error -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        binding.rvProductsCategory.isVisible = false
-                        Toast.makeText(
-                            this@CategoryProductActivity,
-                            value.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is ProductsState.Loading -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        binding.rvProductsCategory.isVisible = false
-                    }
-
-                    is ProductsState.Success -> {
-                        binding.shimmerLayout.stopShimmer()
-                        binding.shimmerLayout.isVisible = false
-                        binding.rvProductsCategory.isVisible = true
-                        Log.d(
-                            "CategoryProductActivity",
-                            "Received Product Category ${value.products.size} products"
-                        )
-                        if (value.products.isNotEmpty()) {
-                            adapter.updateData(value.products)
-                        } else {
-                            Toast.makeText(
-                                this@CategoryProductActivity,
-                                "No products found",
-                                Toast.LENGTH_SHORT
-                            ).show()
+            viewModel.productsState.collect(object : FlowCollector<ProductsState> {
+                override suspend fun emit(value: ProductsState) {
+                    when (value) {
+                        is ProductsState.Error -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProductsCategory.isVisible = false
+                            showToast(value.message)
                         }
-                    }
 
-                    else -> {}
+                        is ProductsState.Loading -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProductsCategory.isVisible = false
+                        }
+
+                        is ProductsState.Success -> {
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvProductsCategory.isVisible = true
+
+                            if (value.products.isNotEmpty()) {
+                                adapter.updateData(value.products)
+                            } else {
+                                showToast("No products found")
+                            }
+                        }
+
+                        else -> {}
+                    }
                 }
-            }
+            })
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -121,15 +132,14 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
                 finish()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-
     override fun onClick(id: Int) {
-        val intent = Intent(this, ProductDetailActivity::class.java)
-        intent.putExtra("id_product", id)
+        val intent = Intent(this, ProductDetailActivity::class.java).apply {
+            putExtra("id_product", id)
+        }
         startActivity(intent)
     }
 }

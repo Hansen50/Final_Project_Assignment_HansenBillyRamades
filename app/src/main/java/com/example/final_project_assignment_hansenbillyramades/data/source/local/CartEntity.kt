@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
 @Entity(tableName = "cart_entity")
 data class CartEntity (
     @PrimaryKey
@@ -15,4 +14,4 @@ data class CartEntity (
     @ColumnInfo(name = "product_price") val productPrice: Int,
     @ColumnInfo(name = "product_quantity") var productQuantity: Int,
     @ColumnInfo(name = "image") val image: String,
-) : Parcelable
+)

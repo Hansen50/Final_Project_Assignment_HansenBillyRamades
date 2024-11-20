@@ -44,23 +44,24 @@ class ProductDetailViewModel @Inject constructor(
     }
 
 
-    fun addCart(cart: CartEntity) {
+    fun addCart(cart: Cart) {
         viewModelScope.launch {
             try {
-                cartUseCase.addCart(
-                    Cart(
-                        cart.productId,
-                        cart.productName,
-                        cart.productPrice,
-                        cart.productQuantity,
-                        cart.image
-                    )
-                )
+                val existingCartItem = cartUseCase.getCartById(cart.id)
+                if (existingCartItem != null) {
+                    val updatedCart = existingCartItem.copy(quantity = existingCartItem.quantity + cart.quantity)
+                    cartUseCase.updateCart(updatedCart)
+                    _productState.value = ProductsState.AddedToCart(updatedCart)
+                } else {
+                    cartUseCase.addCart(cart)
+                    _productState.value = ProductsState.AddedToCart(cart)
+                }
             } catch (e: Exception) {
                 _productState.value = ProductsState.Error("Error: ${e.message}")
             }
         }
     }
 }
+
 
 

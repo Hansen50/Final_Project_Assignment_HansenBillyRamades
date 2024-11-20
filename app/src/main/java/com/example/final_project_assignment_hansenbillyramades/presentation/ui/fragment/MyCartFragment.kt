@@ -24,6 +24,7 @@ import com.example.final_project_assignment_hansenbillyramades.presentation.list
 import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.CheckoutActivity
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyCartViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -36,7 +37,7 @@ class MyCartFragment : Fragment(), ItemCartListener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMyCartBinding.inflate(inflater, container, false)
         return binding.root
@@ -46,41 +47,50 @@ class MyCartFragment : Fragment(), ItemCartListener {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         viewModel.loadCart()
-        observeTotalPrice()
-
-        lifecycleScope.launch {
-            viewModel.cartState.collect { cartState ->
-                when (cartState) {
-                    is CartState.Loading -> {
-                        binding.rvCart.isVisible = false
-                    }
-                    is CartState.Success -> {
-                        val carts = cartState.carts
-                        if (carts.isEmpty()) {
-                            binding.rvCart.isVisible = false
-                            binding.ivNoCart.isVisible = true
-                            binding.tvNoCart.isVisible = true
-                            binding.tvNoCartDetail.isVisible = true
-                            binding.bottomButtons.isVisible = false
-                        } else {
-                            binding.rvCart.isVisible = true
-                            binding.ivNoCart.isVisible = false
-                            binding.tvNoCart.isVisible = false
-                            binding.tvNoCartDetail.isVisible = false
-                            binding.bottomButtons.isVisible = true
-                        }
-                        adapter.updateData(carts)
-                    }
-                    is CartState.Error -> {
-                        binding.rvCart.isVisible = false
-                        Toast.makeText(requireContext(), cartState.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
 
         binding.btnCheckout.setOnClickListener {
-            handleCheckout() }
+            handleCheckout()
+        }
+
+        lifecycleScope.launch {
+            viewModel.cartState.collect(object : FlowCollector<CartState> {
+                override suspend fun emit(value: CartState) {
+                    when (value) {
+                        is CartState.Loading -> {
+                            binding.rvCart.isVisible = false
+                        }
+
+                        is CartState.Success -> {
+                            val carts = value.carts
+                            if (carts.isEmpty()) {
+                                binding.rvCart.isVisible = false
+                                binding.ivNoCart.isVisible = true
+                                binding.tvNoCart.isVisible = true
+                                binding.tvNoCartDetail.isVisible = true
+                                binding.bottomButtons.isVisible = false
+                            } else {
+                                binding.rvCart.isVisible = true
+                                binding.ivNoCart.isVisible = false
+                                binding.tvNoCart.isVisible = false
+                                binding.tvNoCartDetail.isVisible = false
+                                binding.bottomButtons.isVisible = true
+                            }
+                            adapter.updateData(carts)
+                            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value.totalPrice)
+                            binding.tvNumberTotalPrice.text = formattedTotal
+                        }
+
+                        is CartState.Error -> {
+                            binding.rvCart.isVisible = false
+                            Toast.makeText(requireContext(), value.message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                    }
+                }
+
+            })
+        }
     }
 
     private fun setupRecyclerView() {
@@ -89,15 +99,17 @@ class MyCartFragment : Fragment(), ItemCartListener {
         binding.rvCart.adapter = adapter
     }
 
-    private fun observeTotalPrice() {
-        lifecycleScope.launch {
-            viewModel.totalPrice.collect { total ->
-                val formattedTotal =
-                    NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
-                binding.tvNumberTotalPrice.text = formattedTotal
-            }
-        }
-    }
+//    private fun observeTotalPrice() {
+//        lifecycleScope.launch {
+//            viewModel.totalPrice.collect(object : FlowCollector<Float>{
+//                override suspend fun emit(value: Float) {
+//                    val formattedTotal =
+//                        NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value)
+//                    binding.tvNumberTotalPrice.text = formattedTotal
+//                }
+//            })
+//        }
+//    }
 
     private fun handleCheckout() {
         val cartState = viewModel.cartState.value
@@ -127,6 +139,11 @@ class MyCartFragment : Fragment(), ItemCartListener {
             cart.quantity--
             viewModel.updateCart(cart)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

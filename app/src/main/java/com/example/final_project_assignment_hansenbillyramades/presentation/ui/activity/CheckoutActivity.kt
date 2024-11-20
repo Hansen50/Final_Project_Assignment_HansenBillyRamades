@@ -35,37 +35,11 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         binding = ActivityCheckoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbarCheckout)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
-        supportActionBar?.title = "Checkout"
-
+        setupActionBar()
         cartRecyclerView()
         viewModel.loadCart()
-        observeTotalPrice()
-
-        lifecycleScope.launch {
-            viewModel.cartState.collect { cartState ->
-                when (cartState) {
-                    is CartState.Loading -> {
-                        //TODO
-                    }
-
-                    is CartState.Success -> {
-                        adapter.updateData(cartState.carts)
-                    }
-
-                    is CartState.Error -> {
-                        Toast.makeText(
-                            this@CheckoutActivity,
-                            "Error: ${cartState.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
+        observeCartState()
+        createOrderState()
 
         binding.cardMenuAddress.setOnClickListener {
             val intent = Intent(this@CheckoutActivity, ChooseAddressActivity::class.java)
@@ -76,6 +50,9 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
             viewModel.createOrderFromCart()
         }
 
+    }
+
+    private fun createOrderState() {
         lifecycleScope.launch {
             viewModel.orderState.collect(object : FlowCollector<OrderState> {
                 override suspend fun emit(value: OrderState) {
@@ -115,7 +92,54 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                 }
             })
         }
+    }
 
+    private fun observeCartState() {
+        lifecycleScope.launch {
+            viewModel.cartState.collect(object : FlowCollector<CartState> {
+                override suspend fun emit(value: CartState) {
+                    when (value) {
+                        is CartState.Loading -> {
+                            Toast.makeText(this@CheckoutActivity, "Loading", Toast.LENGTH_SHORT).show()
+                        }
+
+                        is CartState.Success -> {
+                            adapter.updateData(value.carts)
+                            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value.totalPrice)
+                            binding.tvNumberTotalPrice.text = formattedTotal
+                            binding.tvNumberPriceDetails.text = formattedTotal
+
+                        }
+
+                        is CartState.Error -> {
+                            Toast.makeText(
+                                this@CheckoutActivity,
+                                "Error: ${value.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    }
+                }
+
+            })
+        }
+    }
+
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolbarCheckout)
+        supportActionBar.apply {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
+            supportActionBar?.title = "Checkout"
+        }
+    }
+
+    private fun cartRecyclerView() {
+        adapter = ItemCartsAdapter(emptyList(), this@CheckoutActivity, showDelete = false)
+        binding.rvCart.layoutManager = LinearLayoutManager(this@CheckoutActivity)
+        binding.rvCart.adapter = adapter
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -130,19 +154,13 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
     }
 
 
-    private fun cartRecyclerView() {
-        adapter = ItemCartsAdapter(emptyList(), this@CheckoutActivity, showDelete = false)
-        binding.rvCart.layoutManager = LinearLayoutManager(this@CheckoutActivity)
-        binding.rvCart.adapter = adapter
-    }
-
-    private fun observeTotalPrice() {
-        viewModel.totalPrice.observe(this) { total ->
-            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
-            binding.tvNumberTotalPrice.text = formattedTotal
-            binding.tvNumberPriceDetails.text = formattedTotal
-        }
-    }
+//    private fun observeTotalPrice() {
+//        viewModel.totalPrice.observe(this) { total ->
+//            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
+//            binding.tvNumberTotalPrice.text = formattedTotal
+//            binding.tvNumberPriceDetails.text = formattedTotal
+//        }
+//    }
 
     override fun onDelete(cart: Cart) {
         lifecycleScope.launch {

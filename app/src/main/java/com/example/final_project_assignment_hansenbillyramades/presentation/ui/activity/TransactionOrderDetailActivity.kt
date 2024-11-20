@@ -22,6 +22,7 @@ import com.example.final_project_assignment_hansenbillyramades.presentation.adap
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.ProductDetailViewModel
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.TransactionOrderDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -30,70 +31,90 @@ import java.util.Locale
 class TransactionOrderDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTransactionOrderDetailBinding
     private val viewModel: TransactionOrderDetailViewModel by viewModels()
+    private lateinit var adapter: ItemProductsTransactionOrderDetailAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTransactionOrderDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbarTransactionSorderDetail)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
-        supportActionBar?.title = "Order Detail"
+        setupActionBar()
+        setupRecyclerViewListProduct()
+        observeDataTransactionOrderDetail()
 
-        val adapter = ItemProductsTransactionOrderDetailAdapter(emptyList())
-        binding.rvProductOrdered.adapter = adapter
-        binding.rvProductOrdered.layoutManager = LinearLayoutManager(this)
+    }
 
+
+
+    private fun observeDataTransactionOrderDetail() {
         val transactionOrderId = intent.getStringExtra("id_transaction_order")
-
         lifecycleScope.launch {
             if (transactionOrderId != null) {
                 viewModel.getTransactionOrderDetail(transactionOrderId)
             }
 
-            viewModel.transactionOrderState.collect { state ->
-                when (state) {
-                    is TransactionOrderState.Error -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        binding.rvProductOrdered.isVisible = false
-                        Toast.makeText(
-                            this@TransactionOrderDetailActivity,
-                            "Error: ${state.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+            viewModel.transactionOrderState.collect(object : FlowCollector<TransactionOrderState> {
+                override suspend fun emit(value: TransactionOrderState) {
+                    when (value) {
+                        is TransactionOrderState.Error -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProductOrdered.isVisible = false
+                            Toast.makeText(
+                                this@TransactionOrderDetailActivity,
+                                "Error: ${value.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    is TransactionOrderState.Loading -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        binding.rvProductOrdered.isVisible = false
-                        Toast.makeText(
-                            this@TransactionOrderDetailActivity,
-                            "Loading...",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                        is TransactionOrderState.Loading -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProductOrdered.isVisible = false
+                            Toast.makeText(
+                                this@TransactionOrderDetailActivity,
+                                "Loading...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    is TransactionOrderState.SuccessDetail -> {
-                        val order = state.order
-                        val formattedPriceToRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(order.totalPrice)
-                        binding.tvOrderIdDetail.text = order.id
-                        binding.tvPaymentStatus.text = order.status
-                        binding.tvTotalPriceOrderNumber.text = formattedPriceToRupiah
-                        adapter.updateData(order.products)
+                        is TransactionOrderState.SuccessDetail -> {
+                            val order = value.order
+                            val formattedPriceToRupiah =
+                                NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                                    .format(order.totalPrice)
+                            binding.tvOrderIdDetail.text = order.id
+                            binding.tvPaymentStatus.text = order.status
+                            binding.tvTotalPriceOrderNumber.text = formattedPriceToRupiah
+                            adapter.updateData(order.products)
 
-                        binding.shimmerLayout.stopShimmer()
-                        binding.shimmerLayout.isVisible = false
-                        binding.rvProductOrdered.isVisible = true
-                    }
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvProductOrdered.isVisible = true
+                        }
 
-                    else -> {
+                        else -> {
+                        }
                     }
                 }
-            }
+            })
+
+        }
+    }
+
+    private fun setupRecyclerViewListProduct() {
+        adapter = ItemProductsTransactionOrderDetailAdapter(emptyList())
+        binding.rvProductOrdered.adapter = adapter
+        binding.rvProductOrdered.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolbarTransactionSorderDetail)
+        supportActionBar?.apply {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
+            supportActionBar?.title = "Order Detail"
         }
     }
 
@@ -103,7 +124,9 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

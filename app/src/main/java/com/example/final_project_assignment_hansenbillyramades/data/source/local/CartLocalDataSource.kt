@@ -7,4 +7,5 @@ interface CartLocalDataSource {
     suspend fun updateCartItem(cartEntity: CartEntity)
     suspend fun deleteCartItem(cartEntity: CartEntity)
     suspend fun clearAllCartItems()
+    suspend fun getCartById(productId: Int): CartEntity?
 }

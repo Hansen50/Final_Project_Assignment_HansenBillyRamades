@@ -23,4 +23,8 @@ class CartLocalDataSourceImpl @Inject constructor(private val cartDao: CartDao) 
     override suspend fun clearAllCartItems() {
         cartDao.clearAllCarts()
     }
+
+    override suspend fun getCartById(productId: Int): CartEntity? {
+        return cartDao.getCartItemByProductId(productId)
+    }
 }

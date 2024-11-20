@@ -86,20 +86,17 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
 
     private fun handleSuccessfulPayment() {
         lifecycleScope.launch {
-            // Menghapus semua item yang telah dibayar menggunakan PaymentWebViewModel
             paymentWebViewModel.clearCart()
-
-            // Menampilkan pesan konfirmasi
-            Toast.makeText(this@ChoosePaymentWebViewActivity, "Payment successful. Your cart has been cleared.", Toast.LENGTH_SHORT).show()
-
-            // Navigasi ke MainActivity setelah pembayaran berhasil
+            Toast.makeText(
+                this@ChoosePaymentWebViewActivity,
+                "Payment successful. Your cart has been cleared.",
+                Toast.LENGTH_SHORT
+            ).show()
             val intent = Intent(this@ChoosePaymentWebViewActivity, MainActivity::class.java)
             startActivity(intent)
-            finish()  // Menutup activity ini
+            finish()
         }
     }
-
-
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

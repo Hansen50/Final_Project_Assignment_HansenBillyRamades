@@ -30,8 +30,6 @@ class MyProfileViewModel @Inject constructor(
     private val _userState = MutableStateFlow<UserState>(UserState.Loading)
     val userState: StateFlow<UserState> = _userState
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
 
     fun getUserInfo() {
         viewModelScope.launch {

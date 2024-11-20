@@ -13,10 +13,12 @@ import com.bumptech.glide.Glide
 import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityProductDetailBinding
+import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.presentation.ui.fragment.MyCartFragment
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.ProductDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -32,42 +34,19 @@ class ProductDetailActivity : AppCompatActivity() {
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbarProductDetail)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
+        setupActionBar()
 
         val productId = intent.getIntExtra("id_product", 0)
         Log.d("ProductDetailActivity", "Product ID: $productId")
 
+        observeProductDetails(productId)
+
         binding.ivShare.setOnClickListener {
-            viewModel.productState.value.let { state ->
-                if (state is ProductsState.SuccessDetail) {
-                    val product = state.product
+            shareProduct()
+        }
 
-                    // Data yang akan dibagikan
-                    val shareContent = """
-                🌟 Cek produk ini!
-                🛒 Nama: ${product.name}
-                💸 Harga: ${formatPrice(product.price)}
-                📄 Deskripsi: ${product.description}
-                   Gambar: ${product.image}
-                🔗 Lihat produk lengkap di aplikasi Stomazon!
-            """.trimIndent()
-
-                    // Intent untuk berbagi
-                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_SUBJECT, "Produk dari Stomazon")
-                        putExtra(Intent.EXTRA_TEXT, shareContent)
-                    }
-
-                    // Memulai intent berbagi
-                    startActivity(Intent.createChooser(shareIntent, "Bagikan produk menggunakan"))
-                } else {
-                    Toast.makeText(this, "Data produk belum tersedia untuk dibagikan", Toast.LENGTH_SHORT).show()
-                }
-            }
+        binding.btnCart.setOnClickListener {
+            addToCart()
         }
 
 
@@ -79,77 +58,166 @@ class ProductDetailActivity : AppCompatActivity() {
             finish()
         }
 
-        lifecycleScope.launch {
-            viewModel.getProductDetail(productId)
+    }
 
+    private fun shareProduct() {
+        lifecycleScope.launch {
+            viewModel.productState.collect(object : FlowCollector<ProductsState> {
+                override suspend fun emit(value: ProductsState) {
+                    when (value) {
+                        is ProductsState.SuccessDetail -> {
+                            val product = value.product
+
+                            val shareContent = """
+                            Check Product!
+                            Name: ${product.name}
+                            Price: ${formatPrice(product.price)}
+                            Description: ${product.description}
+                            Image: ${product.image}
+                            Check out the product in Stomazon App!
+                        """.trimIndent()
+
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "Product from Stomazon")
+                                putExtra(Intent.EXTRA_TEXT, shareContent)
+                            }
+
+                            startActivity(Intent.createChooser(shareIntent, "Share Product With"))
+                        }
+
+                        is ProductsState.Error -> {
+                            Toast.makeText(
+                                this@ProductDetailActivity,
+                                "Product data is not yet available to share",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+                            Toast.makeText(
+                                this@ProductDetailActivity,
+                                "Loading product details, please wait...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+
+    private fun addToCart() {
+        lifecycleScope.launch {
             viewModel.productState.collect { state ->
                 when (state) {
-                    is ProductsState.Error -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        Toast.makeText(
-                            this@ProductDetailActivity,
-                            "Failed load data, please check your internet connection",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    is ProductsState.Loading -> {
-                        binding.shimmerLayout.startShimmer()
-                        binding.shimmerLayout.isVisible = true
-                        Toast.makeText(
-                            this@ProductDetailActivity,
-                            "Loading...",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
                     is ProductsState.SuccessDetail -> {
                         val product = state.product
-                        binding.tvTitleProduct.text = product.name
-                        binding.tvCurrency.text = formatPrice(product.price)
-                        binding.tvContentDescription.text = product.description
-                        binding.tvTypeCategory.text = product.category
-                        binding.tvTotalQuantity.text = "${product.quantity}"
-                        binding.tvRatingAverage.setText(String.format("%.2f", product.averageRating))
+                        val cart = Cart(
+                            id = product.id,
+                            cartName = product.name ?: "",
+                            cartPrice = product.price,
+                            quantity = 1,
+                            cartImage = product.image ?: ""
+                        )
+                        viewModel.addCart(cart)
+                    }
 
-                        Glide.with(this@ProductDetailActivity)
-                            .load(product.image)
-                            .into(binding.ivProduct)
+                    is ProductsState.AddedToCart -> {
+                        Toast.makeText(
+                            this@ProductDetailActivity,
+                            "Product added to cart successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                        binding.shimmerLayout.stopShimmer()
-                        binding.shimmerLayout.isVisible = false
+                        val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
+                        intent.putExtra("navigateTo", "MyCartFragment")
+                        startActivity(intent)
+                        finish()
+                    }
+
+                    is ProductsState.Error -> {
+                        Toast.makeText(
+                            this@ProductDetailActivity,
+                            "Error: ${state.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     else -> {
+                        Toast.makeText(
+                            this@ProductDetailActivity,
+                            "Please wait, loading product...",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
         }
+    }
 
-        binding.btnCart.setOnClickListener {
-            viewModel.productState.value.let { state ->
-                if (state is ProductsState.SuccessDetail) {
-                    val product = state.product
-                    val cart = CartEntity(
-                        productId = product.id,
-                        productName = product.name?: "",
-                        productPrice = product.price,
-                        productQuantity = 1,
-                        image = product.image?: ""
-                    )
-                    viewModel.addCart(cart)
-                    Toast.makeText(
-                        this@ProductDetailActivity,
-                        "Success added to cart",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val intent = Intent(this@ProductDetailActivity, MainActivity::class.java)
-                    intent.putExtra("navigateTo", "MyCartFragment")
-                    startActivity(intent)
-                    finish()
+
+    private fun observeProductDetails(productId: Int) {
+        lifecycleScope.launch {
+            viewModel.getProductDetail(productId)
+            viewModel.productState.collect(object : FlowCollector<ProductsState> {
+                override suspend fun emit(value: ProductsState) {
+                    when (value) {
+                        is ProductsState.Error -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            Toast.makeText(
+                                this@ProductDetailActivity,
+                                "Failed load data, please check your internet connection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        is ProductsState.Loading -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            Toast.makeText(
+                                this@ProductDetailActivity,
+                                "Loading...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        is ProductsState.SuccessDetail -> {
+                            val product = value.product
+                            binding.tvTitleProduct.text = product.name
+                            binding.tvCurrency.text = formatPrice(product.price)
+                            binding.tvContentDescription.text = product.description
+                            binding.tvTypeCategory.text = product.category
+                            binding.tvTotalQuantity.text = "${product.quantity}"
+                            binding.tvRatingAverage.setText(String.format("%.2f",product.averageRating)
+                            )
+
+                            Glide.with(this@ProductDetailActivity)
+                                .load(product.image)
+                                .into(binding.ivProduct)
+
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                        }
+
+                        else -> {
+                        }
+
+                    }
                 }
-            }
+
+            })
+        }
+    }
+
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolbarProductDetail)
+        supportActionBar.apply {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
         }
     }
 
@@ -160,6 +228,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

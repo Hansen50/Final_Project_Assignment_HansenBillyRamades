@@ -23,7 +23,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
-    private val repository: ProductRepository,
     private val orderRepository: OrderRepository,
     private val cartUseCase: CartUseCase,
     private val db: StomazonDatabase,
@@ -31,9 +30,6 @@ class CheckoutViewModel @Inject constructor(
 
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> get() = _cartState
-
-    private val _totalPrice = MutableLiveData<Float>()
-    val totalPrice: LiveData<Float> get() = _totalPrice
 
     private val _orderState = MutableStateFlow<OrderState>(OrderState.Loading)
     val orderState: StateFlow<OrderState> get() = _orderState
@@ -44,7 +40,8 @@ class CheckoutViewModel @Inject constructor(
             _cartState.value = CartState.Loading
             try {
                 val cart = cartUseCase.getAllCart()
-                _cartState.value = CartState.Success(cart)
+                val totalPrice = calculateTotalPrice(cart)
+                _cartState.value = CartState.Success(cart, totalPrice)
                 calculateTotalPrice(cart)
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Unknown error")
@@ -57,7 +54,7 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 cartUseCase.updateCart(cart)
-                loadCart()  // Memuat ulang cart setelah update
+                loadCart()
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Failed to update cart")
             }
@@ -65,12 +62,8 @@ class CheckoutViewModel @Inject constructor(
     }
 
 
-    fun calculateTotalPrice(cartList: List<Cart>) {
-        var total = 0f
-        cartList.forEach {
-            total += it.cartPrice * it.quantity
-        }
-        _totalPrice.value = total
+    private fun calculateTotalPrice(cartList: List<Cart>): Float {
+        return cartList.sumOf { it.cartPrice * it.quantity }.toFloat()
     }
 
 
@@ -89,12 +82,10 @@ class CheckoutViewModel @Inject constructor(
             viewModelScope.launch {
                 _orderState.value = OrderState.Loading
                 try {
-                    val totalPrice = _totalPrice.value ?: 0
+                    val totalPrice = (cartState.value as? CartState.Success)?.totalPrice ?: 0f
                     val cartItems = (cartState.value as? CartState.Success)?.carts ?: emptyList()
-                    val email =
-                        FirebaseAuth.getInstance().currentUser?.email ?: "default@example.com"
+                    val email = FirebaseAuth.getInstance().currentUser?.email ?: "default@example.com"
                     val items = cartItems.map { cartItem ->
-                        Log.d("coba", cartItems.toString())
                         Item(
                             id = cartItem.id,
                             name = cartItem.cartName.take(50),
@@ -109,10 +100,6 @@ class CheckoutViewModel @Inject constructor(
                     )
 
                     val response = orderRepository.createOrder(orderRequest)
-                    Log.d(
-                        "CekStatusOrderResponse",
-                        "StatusOrder: ${response.status}, Message: ${response.message}"
-                    )
 
                     if (response.status == "success") {
                         val paymentUrl = response.data?.transaction?.redirectUrl
@@ -121,7 +108,7 @@ class CheckoutViewModel @Inject constructor(
                         if (paymentUrl != null && token != null) {
                             val paymentUrlWithToken = "$paymentUrl?token=$token"
                             _orderState.value =
-                                OrderState.SuccessPayment(paymentUrlWithToken) // Kirimkan URL lengkap ke UI
+                                OrderState.SuccessPayment(paymentUrlWithToken)
                         } else {
                             _orderState.value = OrderState.Success(response)
                         }

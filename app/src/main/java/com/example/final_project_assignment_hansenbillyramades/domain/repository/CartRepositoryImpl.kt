@@ -14,6 +14,11 @@ class CartRepositoryImpl @Inject constructor(
         return localDataSource.getAllCartItems().map { it.toDomainModel() }
     }
 
+    override suspend fun getCartById(productId: Int): Cart? {
+        return localDataSource.getCartById(productId)?.toDomainModel()
+    }
+
+
     override suspend fun insertCart(cart: Cart) {
         localDataSource.insertCartItem(cart.toEntityModel())
     }
@@ -30,7 +35,7 @@ class CartRepositoryImpl @Inject constructor(
         localDataSource.clearAllCartItems()
     }
 
-    private fun CartEntity.toDomainModel(): Cart {
+    fun CartEntity.toDomainModel(): Cart {
         return Cart(
             id = productId,
             cartName = productName,
@@ -40,7 +45,7 @@ class CartRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun Cart.toEntityModel(): CartEntity {
+    fun Cart.toEntityModel(): CartEntity {
         return CartEntity(
             productId = id,
             productName = cartName,

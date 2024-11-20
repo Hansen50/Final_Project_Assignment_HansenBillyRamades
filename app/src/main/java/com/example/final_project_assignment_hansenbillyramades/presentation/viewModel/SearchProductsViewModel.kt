@@ -25,10 +25,6 @@ class SearchProductsViewModel @Inject constructor(
     val productsState: StateFlow<ProductsState> = _productState.asStateFlow()
 
 
-    init {
-        loadAllProducts(null, null)
-    }
-
     fun loadAllProducts(search: String?, limit: Int?) {
         _productState.value = ProductsState.Loading
         viewModelScope.launch {
