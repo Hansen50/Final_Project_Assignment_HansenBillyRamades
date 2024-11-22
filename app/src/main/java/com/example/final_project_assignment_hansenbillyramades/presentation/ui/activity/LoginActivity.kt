@@ -54,6 +54,7 @@ class LoginActivity : AppCompatActivity() {
             .setServerClientId("223888826256-pn2kojspqlsek8ho7kdo8nglojf3aeqe.apps.googleusercontent.com")
             .build()
 
+
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
             .build()

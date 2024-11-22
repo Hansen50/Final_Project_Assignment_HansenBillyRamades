@@ -52,7 +52,7 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
     }
 
     private fun setupRecyclerView() {
-        adapter = ItemProductsAdapter(mutableListOf(), this)
+        adapter = ItemProductsAdapter(emptyList(), this)
         binding.rvProducts.layoutManager = GridLayoutManager(this, 2)
         binding.rvProducts.adapter = adapter
         viewModel.loadAllProducts("", null)
@@ -61,7 +61,7 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
     private fun setupSearchView() {
         binding.svSearchProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
+                if (query != null) {
                     viewModel.loadAllProducts(query, null)
                 }
                 binding.svSearchProduct.clearFocus()

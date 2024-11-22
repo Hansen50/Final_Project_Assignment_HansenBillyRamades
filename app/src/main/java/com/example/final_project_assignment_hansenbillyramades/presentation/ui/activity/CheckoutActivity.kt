@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.final_project_assignment_hansenbillyramades.R
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityCheckoutBinding
+import com.example.final_project_assignment_hansenbillyramades.databinding.CustomLoadingDialogBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.CartState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.OrderState
@@ -28,7 +30,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
     private lateinit var binding: ActivityCheckoutBinding
     private val viewModel: CheckoutViewModel by viewModels()
     private lateinit var adapter: ItemCartsAdapter
-
+    private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         cartRecyclerView()
         viewModel.loadCart()
         observeCartState()
+        loadingDialogPayment()
         createOrderState()
 
         binding.cardMenuAddress.setOnClickListener {
@@ -47,6 +50,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         }
 
         binding.btnPayment.setOnClickListener {
+            loadingDialog.show()
             viewModel.createOrderFromCart()
         }
 
@@ -58,6 +62,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                 override suspend fun emit(value: OrderState) {
                     when (value) {
                         is OrderState.Error -> {
+                            loadingDialog.dismiss()
                             Toast.makeText(
                                 this@CheckoutActivity,
                                 "Error: ${value.message}",
@@ -71,6 +76,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                         }
 
                         is OrderState.Success -> {
+                            loadingDialog.dismiss()
                             Toast.makeText(
                                 this@CheckoutActivity,
                                 "Order Created Successfully",
@@ -79,6 +85,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                         }
 
                         is OrderState.SuccessPayment -> {
+                            loadingDialog.dismiss()
                             val paymentUrl = value.paymentUrl
                             val intent = Intent(
                                 this@CheckoutActivity,
@@ -140,6 +147,14 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         adapter = ItemCartsAdapter(emptyList(), this@CheckoutActivity, showDelete = false)
         binding.rvCart.layoutManager = LinearLayoutManager(this@CheckoutActivity)
         binding.rvCart.adapter = adapter
+    }
+
+    private fun loadingDialogPayment() {
+        val loadingDialogBinding = CustomLoadingDialogBinding.inflate(layoutInflater)
+        loadingDialog = AlertDialog.Builder(this)
+            .setView(loadingDialogBinding.root)
+            .setCancelable(false)
+            .create()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

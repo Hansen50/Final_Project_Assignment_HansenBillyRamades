@@ -24,9 +24,6 @@ class MyProfileViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User> get() = _user
-
     private val _userState = MutableStateFlow<UserState>(UserState.Loading)
     val userState: StateFlow<UserState> = _userState
 
@@ -41,7 +38,7 @@ class MyProfileViewModel @Inject constructor(
                     _userState.value = UserState.Error("User not logged in")
                 }
             } catch (e: Exception) {
-                _userState.value = UserState.Error("Failed to fetch user info: ${e.localizedMessage}")
+                _userState.value = UserState.Error("Failed to fetch user info: ${e.message}")
             }
         }
     }

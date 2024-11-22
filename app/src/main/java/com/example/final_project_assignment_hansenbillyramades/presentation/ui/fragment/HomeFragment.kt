@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentHomeBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
@@ -28,11 +30,11 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HomeFragment : Fragment(), ItemProductListener {
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding ?: throw IllegalStateException("Binding is null")
+    private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapter: ItemProductsAdapter
 
-
+// nge binding xml yang kita gunakan
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -41,12 +43,11 @@ class HomeFragment : Fragment(), ItemProductListener {
         return binding.root
     }
 
-
+// menyiapkan UI dan viewModel akan di panggil
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getUserInfo()
-
         setupUI()
         setupRecyclerView()
         observeUserState()
@@ -80,7 +81,7 @@ class HomeFragment : Fragment(), ItemProductListener {
     }
 
     private fun setupRecyclerView() {
-            adapter = ItemProductsAdapter(mutableListOf(), this@HomeFragment)
+            adapter = ItemProductsAdapter(emptyList(), this@HomeFragment)
             binding.rvProducts.adapter = adapter
             binding.rvProducts.layoutManager = GridLayoutManager(requireContext(), 2)
 
@@ -94,65 +95,67 @@ class HomeFragment : Fragment(), ItemProductListener {
 
     private fun observeUserState() {
         lifecycleScope.launch {
-            viewModel.userState.collect(object : FlowCollector<UserState> {
-                override suspend fun emit(value: UserState) {
-                    when (value) {
-                        is UserState.Error -> {
-                            showToast("Failed to load user data, please check your internet connection")
-                        }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userState.collect(object : FlowCollector<UserState> {
+                    override suspend fun emit(value: UserState) {
+                            when (value) {
+                                is UserState.Error -> {
+                                    showToast("Failed to load user data, please check your internet connection")
+                                }
 
-                        is UserState.Loading -> {
-                            showToast("Loading....")
-                        }
+                                is UserState.Loading -> {
+                                    showToast("Loading....")
+                                }
 
-                        is UserState.Success -> {
-                            binding.tvUserName.text = value.user.name
-                        }
-
+                                is UserState.Success -> {
+                                    binding.tvUserName.text = value.user.name
+                                }
+                            }
                     }
-                }
                 })
+            }
         }
     }
 
     private fun observeProductsState() {
         lifecycleScope.launch {
-            viewModel.productsState.collect(object : FlowCollector<ProductsState> {
-                override suspend fun emit(value: ProductsState) {
-                    when (value) {
-                        is ProductsState.Success -> {
-                            Log.d(
-                                "HomeFragmentData",
-                                "ReceivedProduct ${value.products.size} products"
-                            )
-                            binding.shimmerLayout.stopShimmer()
-                            binding.shimmerLayout.isVisible = false
-                            binding.rvProducts.isVisible = true
-                            binding.swipeRefreshLayout.isRefreshing = false
-                            adapter.updateData(value.products)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.productsState.collect(object : FlowCollector<ProductsState> {
+                    override suspend fun emit(value: ProductsState) {
+                            when (value) {
+                                is ProductsState.Success -> {
+                                    Log.d(
+                                        "HomeFragmentData",
+                                        "ReceivedProduct ${value.products.size} products"
+                                    )
+                                    binding.shimmerLayout.stopShimmer()
+                                    binding.shimmerLayout.isVisible = false
+                                    binding.rvProducts.isVisible = true
+                                    binding.swipeRefreshLayout.isRefreshing = false
+                                    adapter.updateData(value.products)
 
+                                }
+
+                                is ProductsState.Loading -> {
+                                    binding.shimmerLayout.startShimmer()
+                                    binding.shimmerLayout.isVisible = true
+                                    binding.rvProducts.isVisible = false
+                                    binding.swipeRefreshLayout.isRefreshing = true
+                                }
+
+                                is ProductsState.Error -> {
+                                    binding.shimmerLayout.startShimmer()
+                                    binding.shimmerLayout.isVisible = true
+                                    binding.rvProducts.isVisible = false
+                                    binding.swipeRefreshLayout.isRefreshing = false
+                                    showToast("Failed to load data product, please check your internet connection")
+                                }
+
+                                else -> {}
+                            }
                         }
-
-                        is ProductsState.Loading -> {
-                            binding.shimmerLayout.startShimmer()
-                            binding.shimmerLayout.isVisible = true
-                            binding.rvProducts.isVisible = false
-                            binding.swipeRefreshLayout.isRefreshing = true
-                            showToast("Loading Products")
-                        }
-
-                        is ProductsState.Error -> {
-                            binding.shimmerLayout.startShimmer()
-                            binding.shimmerLayout.isVisible = true
-                            binding.rvProducts.isVisible = false
-                            binding.swipeRefreshLayout.isRefreshing = false
-                            showToast("Failed to load data product, please check your internet connection")
-                        }
-
-                        else -> {}
-                    }
-                }
-            })
+                })
+            }
         }
     }
 
@@ -177,3 +180,8 @@ class HomeFragment : Fragment(), ItemProductListener {
         startActivity(intent)
     }
 }
+
+// di sini saya menggunakan viewLifecycleowenr karena mengelola view pada fragment ini
+// repeatonlifecycle saya gunakan untuk memgload data apabila fragment nya ini aktif, kalau misalkan kita berpindah
+// halaman maka fragment nya destoryed dan tidak ada lagi load data
+// kemudian hal ini akan mencegah IllegalStateException

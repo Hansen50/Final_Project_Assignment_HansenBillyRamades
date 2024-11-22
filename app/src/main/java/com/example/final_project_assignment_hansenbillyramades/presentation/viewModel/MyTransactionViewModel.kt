@@ -20,11 +20,11 @@ class MyTransactionViewModel @Inject constructor(
     val transactionOrderState: StateFlow<TransactionOrderState> = _transactionOrderState.asStateFlow()
 
 
-    fun loadAllTransactionOrder() {
+    fun loadAllTransactionOrder(orderPaymentStatus: String) {
         _transactionOrderState.value = TransactionOrderState.Loading
         viewModelScope.launch {
             try {
-                val transactionOrder = getListTransactionOrderUseCase()
+                val transactionOrder = getListTransactionOrderUseCase(orderPaymentStatus)
                 _transactionOrderState.value = TransactionOrderState.Success(transactionOrder)
             } catch (e: Exception) {
                 _transactionOrderState.value = TransactionOrderState.Error(e.message ?: "Error")

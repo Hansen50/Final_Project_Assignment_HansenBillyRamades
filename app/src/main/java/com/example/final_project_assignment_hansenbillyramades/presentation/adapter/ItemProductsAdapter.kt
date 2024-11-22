@@ -12,7 +12,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class ItemProductsAdapter(
-    private var listProduct: MutableList<Products>,
+    private var listProduct: List<Products>,
     private val listener: ItemProductListener,
 
     ) : RecyclerView.Adapter<ItemProductsAdapter.MyViewHolder>() {
@@ -53,8 +53,7 @@ class ItemProductsAdapter(
 
 
     fun updateData(newProducts: List<Products>) {
-        listProduct.clear()
-        listProduct.addAll(newProducts)
+        listProduct = newProducts
         notifyDataSetChanged()
     }
 }

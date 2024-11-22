@@ -24,23 +24,18 @@ class HomeViewModel @Inject constructor(
 
     private val _productState = MutableStateFlow<ProductsState>(ProductsState.Loading)
     val productsState: StateFlow<ProductsState> = _productState.asStateFlow()
+    // mutablestateflow digunakan untuk meyimpan status atau state
 
 
     private val _userState = MutableStateFlow<UserState>(UserState.Loading)
     val userState: StateFlow<UserState> = _userState
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User> get() = _user
+    // mutable live data digunakan menyimpan data pengguna sebagai objek bukan state
+    // karena pake live data di akses otmats berubah di ui
 
-
-    private var isLoading = false
 
     fun loadAllProducts(name: String?, limit: Int?) {
-        if (isLoading) return
-
-        isLoading = true
         _productState.value = ProductsState.Loading
-
         viewModelScope.launch {
             try {
                 val products = listProductUseCase(name, limit)
@@ -52,7 +47,6 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 _productState.value = ProductsState.Error(e.message ?: "Error")
             }
-            isLoading = false
         }
     }
 

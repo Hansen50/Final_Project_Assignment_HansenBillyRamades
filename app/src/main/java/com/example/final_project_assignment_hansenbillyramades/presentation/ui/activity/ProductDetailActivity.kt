@@ -116,10 +116,10 @@ class ProductDetailActivity : AppCompatActivity() {
                         val product = state.product
                         val cart = Cart(
                             id = product.id,
-                            cartName = product.name ?: "",
+                            cartName = product.name,
                             cartPrice = product.price,
                             quantity = 1,
-                            cartImage = product.image ?: ""
+                            cartImage = product.image
                         )
                         viewModel.addCart(cart)
                     }

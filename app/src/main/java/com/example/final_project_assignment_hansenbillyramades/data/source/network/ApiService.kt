@@ -17,8 +17,8 @@ interface ApiService {
     @GET("products")
     suspend fun getAllProducts(
         @Query("search") search: String?,
-        @Query("limit") limit: Int?
-    ) : ProductResponse
+        @Query("limit") limit: Int?,
+    ): ProductResponse
 
 
     @GET("product/{id}")
@@ -27,17 +27,19 @@ interface ApiService {
     @GET("products/category/{categoryName}")
     suspend fun getProductByCategory(
         @Path("categoryName") categoryName: String,
-        @Query("search") search: String?
+        @Query("search") search: String?,
     ): ProductResponse
 
     @GET("orders")
-    suspend fun getAllTransactionOrders() : TransactionResponse
+    suspend fun getAllTransactionOrders(
+        @Query("orderPaymentStatus") orderPaymentStatus: String,
+    ): TransactionResponse
 
     @GET("order/{id}")
     suspend fun getTransactionOrdersById(@Path("id") id: String): TransactionOrderDetailResponse
 
     @POST("order/snap")
     suspend fun createOrder(
-        @Body orderRequest: Order
+        @Body orderRequest: Order,
     ): OrderResponse
 }

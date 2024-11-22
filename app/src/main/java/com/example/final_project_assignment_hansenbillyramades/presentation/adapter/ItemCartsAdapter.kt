@@ -34,6 +34,7 @@ class ItemCartsAdapter(
     }
 
     override fun getItemCount() = listCart.size
+    // mengemabilkan jumlah item dalam daftar
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val cart = listCart[position]

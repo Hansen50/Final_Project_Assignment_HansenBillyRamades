@@ -12,7 +12,19 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
         firebaseAuthDataSource.signOut()
     }
 
-    override fun getUserInfo(): User? {
-        return firebaseAuthDataSource.getUserInfo()
+    override suspend fun getUserInfo(): User? {
+        val firebaseUser = firebaseAuthDataSource.getUserInfo()
+        return firebaseUser?.let {
+            val firstName = it.displayName?.split(" ")?.first() ?: "No Name"
+            User(
+                name = firstName,
+                email = it.email ?: "No Email",
+                phone = it.phoneNumber ?: "",
+                photoUrl = it.photoUrl?.toString()
+            )
+        }
     }
 }
+
+// let dipakai untuk menangani objek yang tidak null.
+// Objek yang diproses di dalam let bisa diakses dengan kata kunci it.

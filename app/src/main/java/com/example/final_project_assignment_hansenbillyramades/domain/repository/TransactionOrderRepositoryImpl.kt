@@ -11,13 +11,15 @@ class TransactionOrderRepositoryImpl @Inject constructor(
     private val remoteDataSource: UserRemoteDataSource
 ) : TransactionOrderRepository {
 
-    override suspend fun getAllTransactionOrder(): List<TransactionOrder> {
-        return remoteDataSource.getAllTransactionOrders().data?.mapNotNull { it?.toTransaction() } ?: emptyList()
+    override suspend fun getAllTransactionOrder(orderPaymentStatus: String): List<TransactionOrder> {
+        return remoteDataSource.getAllTransactionOrders(orderPaymentStatus).data?.mapNotNull { it?.toTransaction() } ?: emptyList()
+        // data adalah response dari api yang menyimpan daftar transaksi order.
+        // di sini sya juga menggunakan mapNotNull yang di mana berharap selama transformasi tidak mengandung nilai null, jadi ketika nilai null maka tidak akan mask ke list
+        // kalau tetep ada data null maka akan mengembalikan emptylist saja
     }
 
     override suspend fun getTransactionOrdersById(id: String): TransactionOrderDetail {
-        val response = remoteDataSource.getTransactionOrdersById(id)
-        return response.data?.toDomainModel() ?: throw Exception("Data not found")
+        return remoteDataSource.getTransactionOrdersById(id).data?.toDomainModel() ?: throw Exception("Data not found")
     }
 }
 
@@ -43,6 +45,16 @@ fun TransactionOrderDetailResponse.Data.toDomainModel(): TransactionOrderDetail 
     )
 }
 
+//details adalah properti yang berisi daftar detail produk yang ada dalam transaksi.
+// Ini mungkin berupa daftar objek yang berisi informasi produk.
+
+//  Fungsi flatMap akan memproses setiap elemen detail dalam daftar details dan mengubahnya menjadi
+//  elemen-elemen odProducts yang terdapat dalam setiap detail
+
+
+//MapNotNull nah digunkakan untuk konversi setiap object produk ke dalama domian atau data class dan jika produk null maka ga di ambil
+//jika odproduct bernilai null maka akan mengemalikan list kosong
+
 fun TransactionOrderDetailResponse.Data.Detail.OdProduct.toDomainModel(): TransactionOrderDetail.Product {
     return TransactionOrderDetail.Product(
         id = this.id ?: 0,
@@ -52,15 +64,3 @@ fun TransactionOrderDetailResponse.Data.Detail.OdProduct.toDomainModel(): Transa
         image = this.imageUrl?.pdImageUrl.orEmpty(),
     )
 }
-
-
-//fun TransactionResponse.Data.toTransaction(): TransactionOrder {
-//    return TransactionOrder(
-//        id = this.id ?: 0,
-//        name = this.name ?: "",
-//        price = this.price?: 0,
-//        quantity = this.quantity?: 0,
-//        totalPrice = (this.price ?: 0) * (this.quantity ?: 0)
-//
-//    )
-//}

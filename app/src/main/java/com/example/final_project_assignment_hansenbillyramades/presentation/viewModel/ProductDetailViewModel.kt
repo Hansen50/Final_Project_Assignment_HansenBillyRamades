@@ -18,8 +18,6 @@ import javax.inject.Inject
 class ProductDetailViewModel @Inject constructor(
     private val getProductByIdUseCase: GetProductByIdUseCase,
     private val cartUseCase: CartUseCase,
-    private val db: StomazonDatabase,
-
     ) : ViewModel() {
 
     private val _productState = MutableStateFlow<ProductsState>(ProductsState.Loading)
@@ -29,14 +27,9 @@ class ProductDetailViewModel @Inject constructor(
     fun getProductDetail(id: Int) {
         viewModelScope.launch {
             _productState.value = ProductsState.Loading
-
             try {
                 val productDetail = getProductByIdUseCase(id)
-                if (productDetail != null) {
-                    _productState.value = ProductsState.SuccessDetail(productDetail)
-                } else {
-                    _productState.value = ProductsState.Error("Product not found")
-                }
+                _productState.value = ProductsState.SuccessDetail(productDetail)
             } catch (e: Exception) {
                 _productState.value = ProductsState.Error(e.message ?: "An error occurred")
             }

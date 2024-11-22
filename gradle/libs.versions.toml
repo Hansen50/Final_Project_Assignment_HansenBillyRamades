@@ -39,6 +39,7 @@ navigationFragmentKtx = "2.8.3"
 navigationUiKtx = "2.8.3"
 shimmer = "0.5.0"
 swiperefreshlayout = "1.2.0-alpha01"
+firebaseCrashlyticsKtx = "19.2.1"
 
 
 [libraries]
@@ -84,6 +85,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

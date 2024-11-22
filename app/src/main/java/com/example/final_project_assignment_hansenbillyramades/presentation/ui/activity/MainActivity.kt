@@ -23,9 +23,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
-        binding.bottomNav.elevation = 120f
         binding.bottomNav.setOnItemSelectedListener(object : OnItemSelectedListener {
             override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {

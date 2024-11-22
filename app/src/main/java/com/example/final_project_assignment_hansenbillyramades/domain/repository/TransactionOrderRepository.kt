@@ -5,6 +5,6 @@ import com.example.final_project_assignment_hansenbillyramades.domain.model.Tran
 import com.example.final_project_assignment_hansenbillyramades.domain.model.TransactionOrderDetail
 
 interface TransactionOrderRepository {
-    suspend fun getAllTransactionOrder(): List<TransactionOrder>
+    suspend fun getAllTransactionOrder(orderPaymentStatus: String): List<TransactionOrder>
     suspend fun getTransactionOrdersById(id: String): TransactionOrderDetail
 }

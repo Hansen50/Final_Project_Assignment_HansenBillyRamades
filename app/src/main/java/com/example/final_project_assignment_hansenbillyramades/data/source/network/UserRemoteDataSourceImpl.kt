@@ -27,8 +27,8 @@ UserRemoteDataSource{
         return apiService.createOrder(orderRequest)
     }
 
-    override suspend fun getAllTransactionOrders(): TransactionResponse {
-        return apiService.getAllTransactionOrders()
+    override suspend fun getAllTransactionOrders(orderPaymentStatus: String): TransactionResponse {
+        return apiService.getAllTransactionOrders(orderPaymentStatus)
     }
 
     override suspend fun getTransactionOrdersById(id: String): TransactionOrderDetailResponse {

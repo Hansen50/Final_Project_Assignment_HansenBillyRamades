@@ -12,10 +12,12 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityChoosePaymentWebViewBinding
+import com.example.final_project_assignment_hansenbillyramades.databinding.CustomLoadingDialogBinding
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.PaymentWebViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -24,6 +26,7 @@ import kotlinx.coroutines.launch
 class ChoosePaymentWebViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChoosePaymentWebViewBinding
     private val paymentWebViewModel: PaymentWebViewModel by viewModels()
+    private lateinit var loadingDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChoosePaymentWebViewBinding.inflate(layoutInflater)
@@ -32,6 +35,8 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarChoosePayment)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+
+
 
         val paymentUrl = intent.getStringExtra("paymentUrl")
 

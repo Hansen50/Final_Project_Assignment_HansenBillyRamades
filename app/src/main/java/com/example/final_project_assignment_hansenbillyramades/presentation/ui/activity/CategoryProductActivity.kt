@@ -57,7 +57,7 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
     }
 
     private fun setupRecyclerView() {
-        adapter = ItemProductsAdapter(mutableListOf(), this)
+        adapter = ItemProductsAdapter(emptyList(), this)
         binding.rvProductsCategory.layoutManager = GridLayoutManager(this, 2)
         binding.rvProductsCategory.adapter = adapter
     }

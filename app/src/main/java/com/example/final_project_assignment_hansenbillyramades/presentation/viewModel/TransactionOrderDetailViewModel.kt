@@ -23,7 +23,6 @@ class TransactionOrderDetailViewModel @Inject constructor(
     fun getTransactionOrderDetail(id: String) {
         viewModelScope.launch {
             _transactionOrderState.value = TransactionOrderState.Loading
-
             try {
                 val transactionOrderDetail = getTransactionOrderDetailById(id)
                 _transactionOrderState.value = TransactionOrderState.SuccessDetail(transactionOrderDetail)

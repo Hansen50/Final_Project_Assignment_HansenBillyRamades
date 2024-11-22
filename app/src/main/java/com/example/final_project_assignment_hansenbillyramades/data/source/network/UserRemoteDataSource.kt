@@ -13,7 +13,7 @@ interface UserRemoteDataSource {
     suspend fun getProductById(id: Int) : ProductDetailResponse
     suspend fun getProductByCategory(categoryName: String, search: String?) : ProductResponse
     suspend fun createOrder(orderRequest: Order): OrderResponse
-    suspend fun getAllTransactionOrders() : TransactionResponse
+    suspend fun getAllTransactionOrders(orderPaymentStatus: String) : TransactionResponse
     suspend fun getTransactionOrdersById(id: String) : TransactionOrderDetailResponse
 
 }
