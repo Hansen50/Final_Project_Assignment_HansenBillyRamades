@@ -13,9 +13,6 @@ class TransactionOrderRepositoryImpl @Inject constructor(
 
     override suspend fun getAllTransactionOrder(orderPaymentStatus: String): List<TransactionOrder> {
         return remoteDataSource.getAllTransactionOrders(orderPaymentStatus).data?.mapNotNull { it?.toTransaction() } ?: emptyList()
-        // data adalah response dari api yang menyimpan daftar transaksi order.
-        // di sini sya juga menggunakan mapNotNull yang di mana berharap selama transformasi tidak mengandung nilai null, jadi ketika nilai null maka tidak akan mask ke list
-        // kalau tetep ada data null maka akan mengembalikan emptylist saja
     }
 
     override suspend fun getTransactionOrdersById(id: String): TransactionOrderDetail {
@@ -26,6 +23,7 @@ class TransactionOrderRepositoryImpl @Inject constructor(
 fun TransactionResponse.Data.toTransaction(): TransactionOrder {
     return TransactionOrder(
         id = this.orPlatformId?: "",
+        dateOrder = this.orCreatedOn?: "",
         status = this.orStatus?: "",
         totalPrice = this.orTotalPrice?: 0
     )
@@ -35,6 +33,7 @@ fun TransactionResponse.Data.toTransaction(): TransactionOrder {
 fun TransactionOrderDetailResponse.Data.toDomainModel(): TransactionOrderDetail {
     return TransactionOrderDetail(
         id = this.orPlatformId?: "",
+        dateOrder = this.orCreatedOn?: "",
         status = this.orStatus.orEmpty(),
         totalPrice = this.orTotalPrice ?: 0,
         products = this.details?.flatMap { detail ->
@@ -44,16 +43,6 @@ fun TransactionOrderDetailResponse.Data.toDomainModel(): TransactionOrderDetail 
         } ?: emptyList()
     )
 }
-
-//details adalah properti yang berisi daftar detail produk yang ada dalam transaksi.
-// Ini mungkin berupa daftar objek yang berisi informasi produk.
-
-//  Fungsi flatMap akan memproses setiap elemen detail dalam daftar details dan mengubahnya menjadi
-//  elemen-elemen odProducts yang terdapat dalam setiap detail
-
-
-//MapNotNull nah digunkakan untuk konversi setiap object produk ke dalama domian atau data class dan jika produk null maka ga di ambil
-//jika odproduct bernilai null maka akan mengemalikan list kosong
 
 fun TransactionOrderDetailResponse.Data.Detail.OdProduct.toDomainModel(): TransactionOrderDetail.Product {
     return TransactionOrderDetail.Product(

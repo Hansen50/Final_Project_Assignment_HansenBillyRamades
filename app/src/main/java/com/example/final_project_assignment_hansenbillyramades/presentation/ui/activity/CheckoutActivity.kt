@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.final_project_assignment_hansenbillyramades.R
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityCheckoutBinding
 import com.example.final_project_assignment_hansenbillyramades.databinding.CustomLoadingDialogBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
@@ -43,11 +42,6 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         observeCartState()
         loadingDialogPayment()
         createOrderState()
-
-        binding.cardMenuAddress.setOnClickListener {
-            val intent = Intent(this@CheckoutActivity, ChooseAddressActivity::class.java)
-            startActivity(intent)
-        }
 
         binding.btnPayment.setOnClickListener {
             loadingDialog.show()
@@ -107,12 +101,15 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                 override suspend fun emit(value: CartState) {
                     when (value) {
                         is CartState.Loading -> {
-                            Toast.makeText(this@CheckoutActivity, "Loading", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@CheckoutActivity, "Loading", Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         is CartState.Success -> {
                             adapter.updateData(value.carts)
-                            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value.totalPrice)
+                            val formattedTotal =
+                                NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                                    .format(value.totalPrice)
                             binding.tvNumberTotalPrice.text = formattedTotal
                             binding.tvNumberPriceDetails.text = formattedTotal
 
@@ -121,7 +118,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                         is CartState.Error -> {
                             Toast.makeText(
                                 this@CheckoutActivity,
-                                "Error: ${value.message}",
+                                "Failed to load data, please check your internet connection",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -168,40 +165,19 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
         }
     }
 
-
-//    private fun observeTotalPrice() {
-//        viewModel.totalPrice.observe(this) { total ->
-//            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(total)
-//            binding.tvNumberTotalPrice.text = formattedTotal
-//            binding.tvNumberPriceDetails.text = formattedTotal
-//        }
-//    }
-
     override fun onDelete(cart: Cart) {
-        lifecycleScope.launch {
             viewModel.deleteCart(cart)
-        }
-    }
-
-    override fun onUpdateQuantity(cart: Cart) {
-        lifecycleScope.launch {
-            viewModel.updateCart(cart)
-        }
     }
 
     override fun onIncrement(cart: Cart) {
         cart.quantity++
-        lifecycleScope.launch {
-            viewModel.updateCart(cart)
-        }
+        viewModel.updateCart(cart)
     }
 
     override fun onDecrement(cart: Cart) {
         if (cart.quantity > 1) {
             cart.quantity--
-            lifecycleScope.launch {
-                viewModel.updateCart(cart)
-            }
+            viewModel.updateCart(cart)
         }
     }
 }

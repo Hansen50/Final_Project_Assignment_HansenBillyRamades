@@ -7,7 +7,7 @@ import javax.inject.Inject
 class ListProductUseCase @Inject constructor(
     private val productRepository: ProductRepository
 ) {
-    suspend operator fun invoke(search: String?, limit: Int?) : List<Products> {
-        return productRepository.getAllProducts(search, limit)
+    suspend operator fun invoke(search: String?) : List<Products> {
+        return productRepository.getAllProducts(search)
     }
 }

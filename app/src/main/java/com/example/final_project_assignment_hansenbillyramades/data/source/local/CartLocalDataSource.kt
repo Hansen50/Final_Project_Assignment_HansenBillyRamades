@@ -1,5 +1,7 @@
 package com.example.final_project_assignment_hansenbillyramades.data.source.local
 
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.room.CartEntity
+
 interface CartLocalDataSource {
 
     suspend fun getAllCartItems(): List<CartEntity>

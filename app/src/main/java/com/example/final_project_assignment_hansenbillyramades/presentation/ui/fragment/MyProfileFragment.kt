@@ -38,7 +38,6 @@ class MyProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getUserInfo()
         observeUserData()
 
         binding.btnLogout.setOnClickListener {

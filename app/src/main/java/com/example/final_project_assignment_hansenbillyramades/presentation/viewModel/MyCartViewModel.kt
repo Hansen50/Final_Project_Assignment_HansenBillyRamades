@@ -19,8 +19,6 @@ class MyCartViewModel @Inject constructor(
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> get() = _cartState
 
-//    private val _totalPrice = MutableStateFlow(0f)
-//    val totalPrice: StateFlow<Float> get() = _totalPrice
 
     fun loadCart() {
         viewModelScope.launch {

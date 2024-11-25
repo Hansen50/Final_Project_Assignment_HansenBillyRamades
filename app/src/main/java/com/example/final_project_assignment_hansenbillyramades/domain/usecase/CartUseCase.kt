@@ -1,6 +1,5 @@
 package com.example.final_project_assignment_hansenbillyramades.domain.usecase
 
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.CartRepository
 import javax.inject.Inject

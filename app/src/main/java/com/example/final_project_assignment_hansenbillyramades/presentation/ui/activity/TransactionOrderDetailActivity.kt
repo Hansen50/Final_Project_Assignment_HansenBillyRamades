@@ -1,5 +1,6 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -25,6 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -54,6 +57,7 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
             }
 
             viewModel.transactionOrderState.collect(object : FlowCollector<TransactionOrderState> {
+                @SuppressLint("NewApi")
                 override suspend fun emit(value: TransactionOrderState) {
                     when (value) {
                         is TransactionOrderState.Error -> {
@@ -80,11 +84,12 @@ class TransactionOrderDetailActivity : AppCompatActivity() {
 
                         is TransactionOrderState.SuccessDetail -> {
                             val order = value.order
-                            val formattedPriceToRupiah =
-                                NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-                                    .format(order.totalPrice)
+                            val formattedPriceToRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(order.totalPrice)
+                            val formattedDate = LocalDate.parse(order.dateOrder.substring(0, 10)).format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", Locale("en", "ID")))
+
                             binding.tvOrderIdDetail.text = order.id
                             binding.tvPaymentStatus.text = order.status
+                            binding.tvDateTransactiionValue.text = formattedDate
                             binding.tvTotalPriceOrderNumber.text = formattedPriceToRupiah
                             adapter.updateData(order.products)
 

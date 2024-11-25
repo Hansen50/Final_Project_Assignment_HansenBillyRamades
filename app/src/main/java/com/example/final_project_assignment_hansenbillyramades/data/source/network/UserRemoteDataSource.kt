@@ -9,7 +9,7 @@ import com.example.final_project_assignment_hansenbillyramades.domain.model.Orde
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 
 interface UserRemoteDataSource {
-    suspend fun getAllProducts(search: String?, limit: Int?) : ProductResponse
+    suspend fun getAllProducts(search: String?) : ProductResponse
     suspend fun getProductById(id: Int) : ProductDetailResponse
     suspend fun getProductByCategory(categoryName: String, search: String?) : ProductResponse
     suspend fun createOrder(orderRequest: Order): OrderResponse

@@ -37,11 +37,8 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
         setupRecyclerView()
 
         val categoryName = intent.getStringExtra("CATEGORY_NAME") ?: ""
-        if (categoryName.isEmpty()) {
-            showToast("No category selected")
-            finish()
-            return
-        }
+        binding.tvCategoryValue.text = categoryName
+
         fetchProductsByCategory(categoryName)
         setupSearchView(categoryName)
         observeProductState()
@@ -63,9 +60,10 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
     }
 
     private fun setupSearchView(categoryName: String) {
-        binding.svSearchProducCategory.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.svSearchProducCategory.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
+                if (query != null) {
                     fetchProductsByCategory(categoryName, query)
                 }
                 binding.svSearchProducCategory.clearFocus()
@@ -93,6 +91,8 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
                         is ProductsState.Error -> {
                             binding.shimmerLayout.startShimmer()
                             binding.shimmerLayout.isVisible = true
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                             binding.rvProductsCategory.isVisible = false
                             showToast(value.message)
                         }
@@ -100,19 +100,27 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
                         is ProductsState.Loading -> {
                             binding.shimmerLayout.startShimmer()
                             binding.shimmerLayout.isVisible = true
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                             binding.rvProductsCategory.isVisible = false
                         }
 
                         is ProductsState.Success -> {
                             binding.shimmerLayout.stopShimmer()
                             binding.shimmerLayout.isVisible = false
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                             binding.rvProductsCategory.isVisible = true
+                            adapter.updateData(value.products)
+                        }
 
-                            if (value.products.isNotEmpty()) {
-                                adapter.updateData(value.products)
-                            } else {
-                                showToast("No products found")
-                            }
+                        is ProductsState.NoResults -> {
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvProductsCategory.isVisible = false
+                            binding.ivProductSearchNotFound.isVisible = true
+                            binding.tvProductSearchNotFound.isVisible = true
+                            binding.tvProductSearchNotFound.text = value.message
                         }
 
                         else -> {}
@@ -132,6 +140,7 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

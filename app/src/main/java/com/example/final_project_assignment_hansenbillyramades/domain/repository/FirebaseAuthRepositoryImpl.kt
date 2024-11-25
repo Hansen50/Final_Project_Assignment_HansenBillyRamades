@@ -25,6 +25,3 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
         }
     }
 }
-
-// let dipakai untuk menangani objek yang tidak null.
-// Objek yang diproses di dalam let bisa diakses dengan kata kunci it.

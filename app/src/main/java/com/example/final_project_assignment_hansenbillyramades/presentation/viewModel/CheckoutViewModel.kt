@@ -1,19 +1,14 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.viewModel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.final_project_assignment_hansenbillyramades.data.model.OrderResponse
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.CartState
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Item
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Order
 import com.example.final_project_assignment_hansenbillyramades.domain.model.OrderState
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.OrderRepository
-import com.example.final_project_assignment_hansenbillyramades.domain.repository.ProductRepository
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -83,7 +78,11 @@ class CheckoutViewModel @Inject constructor(
                 val email = FirebaseAuth.getInstance().currentUser?.email ?: "default@example.com"
                 val items = mapCartItemsToOrderItems(cartItems)
 
-                val orderRequest = Order(amount = totalPrice.toInt(), email = email, items = items)
+                val orderRequest = Order(
+                    amount = totalPrice.toInt(),
+                    email = email,
+                    items = items
+                )
                 processOrder(orderRequest)
             } catch (e: Exception) {
                 _orderState.value = OrderState.Error(e.message ?: "Unknown error")

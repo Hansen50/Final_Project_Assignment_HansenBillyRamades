@@ -1,5 +1,7 @@
 package com.example.final_project_assignment_hansenbillyramades.data.source.local
 
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.room.CartDao
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.room.CartEntity
 import javax.inject.Inject
 
 class CartLocalDataSourceImpl @Inject constructor(private val cartDao: CartDao) : CartLocalDataSource {

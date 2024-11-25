@@ -9,16 +9,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.example.final_project_assignment_hansenbillyramades.R
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityProductDetailBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
-import com.example.final_project_assignment_hansenbillyramades.presentation.ui.fragment.MyCartFragment
+import com.example.final_project_assignment_hansenbillyramades.presentation.adapter.ImagePagerAdapter
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.ProductDetailViewModel
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -73,7 +72,6 @@ class ProductDetailActivity : AppCompatActivity() {
                             Name: ${product.name}
                             Price: ${formatPrice(product.price)}
                             Description: ${product.description}
-                            Image: ${product.image}
                             Check out the product in Stomazon App!
                         """.trimIndent()
 
@@ -114,12 +112,13 @@ class ProductDetailActivity : AppCompatActivity() {
                 when (state) {
                     is ProductsState.SuccessDetail -> {
                         val product = state.product
+                        val firstImage = product.images.firstOrNull() ?: ""
                         val cart = Cart(
                             id = product.id,
                             cartName = product.name,
                             cartPrice = product.price,
                             quantity = 1,
-                            cartImage = product.image
+                            cartImage = firstImage
                         )
                         viewModel.addCart(cart)
                     }
@@ -193,10 +192,12 @@ class ProductDetailActivity : AppCompatActivity() {
                             binding.tvTotalQuantity.text = "${product.quantity}"
                             binding.tvRatingAverage.setText(String.format("%.2f",product.averageRating)
                             )
+                            val imageUrls = product.images
+                            setupViewPager(imageUrls)
 
-                            Glide.with(this@ProductDetailActivity)
-                                .load(product.image)
-                                .into(binding.ivProduct)
+//                            Glide.with(this@ProductDetailActivity)
+//                                .load(product.image)
+//                                .into(binding.ivProduct)
 
                             binding.shimmerLayout.stopShimmer()
                             binding.shimmerLayout.isVisible = false
@@ -220,6 +221,22 @@ class ProductDetailActivity : AppCompatActivity() {
             supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_chevron_left_32)
         }
     }
+
+    private fun setupViewPager(images: List<String>) {
+        val adapter = ImagePagerAdapter(images)
+        binding.viewPagerImages.adapter = adapter
+        val tabLayoutMediator = TabLayoutMediator(
+            binding.tabLayoutIndicator,
+            binding.viewPagerImages, object : TabLayoutMediator.TabConfigurationStrategy {
+                override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
+                    //TODO
+                }
+            }
+        )
+        tabLayoutMediator.attach()
+    }
+
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -6,4 +6,5 @@ sealed class ProductsState {
     data class SuccessDetail(val product: Products) : ProductsState()
     data class Error(val message: String) : ProductsState()
     data class AddedToCart(val cartItem: Cart) : ProductsState()
+    data class NoResults(val message: String) : ProductsState()
 }

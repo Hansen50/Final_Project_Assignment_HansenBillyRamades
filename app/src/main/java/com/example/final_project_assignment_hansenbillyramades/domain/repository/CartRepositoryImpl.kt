@@ -1,9 +1,7 @@
 package com.example.final_project_assignment_hansenbillyramades.domain.repository
 
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.AddressEntity
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.room.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartLocalDataSource
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Address
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import javax.inject.Inject
 
@@ -44,7 +42,6 @@ class CartRepositoryImpl @Inject constructor(
             cartImage = image
         )
     }
-
     fun Cart.toEntityModel(): CartEntity {
         return CartEntity(
             productId = id,

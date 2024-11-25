@@ -11,8 +11,8 @@ import javax.inject.Inject
 
 class UserRemoteDataSourceImpl @Inject constructor(private val apiService: ApiService) :
 UserRemoteDataSource{
-    override suspend fun getAllProducts(search: String?, limit: Int?): ProductResponse {
-        return apiService.getAllProducts(search, limit)
+    override suspend fun getAllProducts(search: String?): ProductResponse {
+        return apiService.getAllProducts(search)
     }
 
     override suspend fun getProductById(id: Int): ProductDetailResponse {

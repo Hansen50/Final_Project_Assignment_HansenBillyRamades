@@ -16,4 +16,6 @@
     <color name="tertinary_yellow">#FFF6E4</color>
     <color name="tertinary_blue">#E4ECF3</color>
     <color name="green">#3A9B7A</color>
+    <color name="transparent_color">#00000000</color>
+    <color name="grey_icon_unselected">#49454F</color>
 </resources>

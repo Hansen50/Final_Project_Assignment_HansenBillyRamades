@@ -28,7 +28,7 @@
                 android:id="@+id/toolbar_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Product Detail"
+                android:text="@string/product_detail"
                 android:textColor="@color/oil_black"
                 android:textSize="20sp"
                 android:textStyle="normal"
@@ -78,14 +78,29 @@
             android:layout_height="0dp"
             android:padding="0dp">
 
-            <ImageView
-                android:id="@+id/iv_product"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerImages"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:scaleType="fitCenter"
+                android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="8dp"
+                android:layout_marginBottom="8dp"
+                app:tabIndicatorHeight="0dp"
+                app:tabBackground="@drawable/tab_selector"
+                android:background="@color/transparent_color"
+                app:layout_constraintBottom_toBottomOf="@id/viewPagerImages"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tabMode="fixed"/>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_1"
@@ -95,13 +110,13 @@
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_product">
+                app:layout_constraintTop_toBottomOf="@id/viewPagerImages">
 
                 <TextView
                     android:id="@+id/tv_currency"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:tooltipText="Rp"
+                    android:tooltipText="@string/rp"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -114,7 +129,7 @@
                     android:id="@+id/tv_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Category:"
+                    android:text="@string/category"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -128,7 +143,7 @@
                     android:id="@+id/tv_type_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:tooltipText="Type Categgory"
+                    android:tooltipText="@string/type_categgory"
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@id/tv_currency"
@@ -146,7 +161,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="20dp"
-                android:tooltipText="Title Product"
+                android:tooltipText="@string/title_product"
                 android:textColor="@color/oil_black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -169,7 +184,7 @@
                 android:id="@+id/tv_rating_average"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:tooltipText="0"
+                android:tooltipText="@string/zero_value"
                 android:textSize="14sp"
                 android:textColor="@color/oil_black"
                 android:layout_marginStart="4dp"
@@ -199,7 +214,7 @@
                         android:id="@+id/tv_quantity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Quantity:"
+                        android:text="@string/quantity"
                         android:textSize="12sp"
                         android:textColor="@color/green"
                         app:layout_constraintStart_toStartOf="parent"
@@ -211,7 +226,7 @@
                         android:id="@+id/tv_total_quantity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:tooltipText="0"
+                        android:tooltipText="@string/quantity_value"
                         android:textSize="12sp"
                         android:textColor="@color/green"
                         android:layout_marginStart="2dp"
@@ -240,7 +255,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:text="Description product"
+                android:text="@string/description_product"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -252,10 +267,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="0dp"
                 android:textSize="14sp"
                 android:textColor="@color/grey_font_text"
-                android:tooltipText="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+                android:tooltipText="@string/lorem_ipsum_is_simply_dummy_text_of_the_printing_and_typesetting_industry_lorem_ipsum_has_been_the_industry_s_standard_dummy_text_ever_since_the_1500s_when_an_unknown_printer_took_a_galley_of_type_and_scrambled_it_to_make_a_type_specimen_book_it_has_survived_not_only_five_centuries_but_also_the_leap_into_electronic_typesetting_remaining_essentially_unchanged_it_was_popularised_in_the_1960s_with_the_release_of_letraset_sheets_containing_lorem_ipsum_passages_and_more_recently_with_desktop_publishing_software_like_aldus_pagemaker_including_versions_of_lorem_ipsum"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -268,6 +283,7 @@
         android:id="@+id/shimmer_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar_product_detail"
         app:layout_constraintBottom_toTopOf="@id/bottom_buttons">
 
@@ -301,11 +317,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background_secondary"
-            android:text="Add to cart"
+            android:text="@string/add_to_cart"
+            android:layout_marginEnd="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+<!--        <Button-->
+<!--            android:id="@+id/btn_buy"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@drawable/button_background_secondary"-->
+<!--            android:text="Buy"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@id/btn_cart"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

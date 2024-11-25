@@ -1,15 +1,11 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.preferences.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.domain.model.UserState
-import com.example.final_project_assignment_hansenbillyramades.domain.model.User
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.GetUserInfoUseCase
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.LogoutUseCase
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +22,11 @@ class MyProfileViewModel @Inject constructor(
 
     private val _userState = MutableStateFlow<UserState>(UserState.Loading)
     val userState: StateFlow<UserState> = _userState
+
+
+    init {
+        getUserInfo()
+    }
 
 
     fun getUserInfo() {

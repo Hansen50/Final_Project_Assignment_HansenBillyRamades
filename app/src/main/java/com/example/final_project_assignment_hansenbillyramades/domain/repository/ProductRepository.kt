@@ -4,7 +4,7 @@ import com.example.final_project_assignment_hansenbillyramades.data.model.Produc
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 
 interface ProductRepository {
-    suspend fun getAllProducts(search: String?, limit: Int?): List<Products>
+    suspend fun getAllProducts(search: String?): List<Products>
     suspend fun getProductById(id: Int): Products
     suspend fun getProductByCategory(categoryName: String, search: String?): List<Products>
 

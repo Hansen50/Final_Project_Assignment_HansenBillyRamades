@@ -12,10 +12,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.example.final_project_assignment_hansenbillyramades.R
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
-import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentHomeBinding
 import com.example.final_project_assignment_hansenbillyramades.databinding.FragmentMyCartBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.CartState
@@ -51,6 +47,8 @@ class MyCartFragment : Fragment(), ItemCartListener {
         binding.btnCheckout.setOnClickListener {
             handleCheckout()
         }
+
+
 
         lifecycleScope.launch {
             viewModel.cartState.collect(object : FlowCollector<CartState> {
@@ -99,35 +97,16 @@ class MyCartFragment : Fragment(), ItemCartListener {
         binding.rvCart.adapter = adapter
     }
 
-//    private fun observeTotalPrice() {
-//        lifecycleScope.launch {
-//            viewModel.totalPrice.collect(object : FlowCollector<Float>{
-//                override suspend fun emit(value: Float) {
-//                    val formattedTotal =
-//                        NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value)
-//                    binding.tvNumberTotalPrice.text = formattedTotal
-//                }
-//            })
-//        }
-//    }
 
     private fun handleCheckout() {
-        val cartState = viewModel.cartState.value
-        if (cartState is CartState.Success && cartState.carts.isNotEmpty()) {
             val intent = Intent(requireContext(), CheckoutActivity::class.java)
             startActivity(intent)
-        } else {
-            Toast.makeText(requireContext(), "Your cart is empty.", Toast.LENGTH_SHORT).show()
         }
-    }
 
     override fun onDelete(cart: Cart) {
         viewModel.deleteCart(cart)
     }
 
-    override fun onUpdateQuantity(cart: Cart) {
-        viewModel.updateCart(cart)
-    }
 
     override fun onIncrement(cart: Cart) {
         cart.quantity++

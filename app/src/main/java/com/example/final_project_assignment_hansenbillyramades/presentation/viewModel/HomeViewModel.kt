@@ -26,6 +26,9 @@ class HomeViewModel @Inject constructor(
     val productsState: StateFlow<ProductsState> = _productState.asStateFlow()
     // mutablestateflow digunakan untuk meyimpan status atau state
 
+    //MutableStateFlow: Data bisa diubah (mutable) di dalam ViewModel. Cocok untuk mengelola state aplikasi.
+    //StateFlow: Data hanya bisa dibaca (read-only) oleh UI. Cocok untuk memberikan data ke UI secara aman tanpa risiko modifikasi.
+
 
     private val _userState = MutableStateFlow<UserState>(UserState.Loading)
     val userState: StateFlow<UserState> = _userState
@@ -33,12 +36,17 @@ class HomeViewModel @Inject constructor(
     // mutable live data digunakan menyimpan data pengguna sebagai objek bukan state
     // karena pake live data di akses otmats berubah di ui
 
+    init {
+        loadAllProducts(null)
+        getUserInfo()
+    }
 
-    fun loadAllProducts(name: String?, limit: Int?) {
+
+    fun loadAllProducts(name: String?) {
         _productState.value = ProductsState.Loading
         viewModelScope.launch {
             try {
-                val products = listProductUseCase(name, limit)
+                val products = listProductUseCase(name)
                 _productState.value = if (products.isNotEmpty()) {
                     ProductsState.Success(products)
                 } else {

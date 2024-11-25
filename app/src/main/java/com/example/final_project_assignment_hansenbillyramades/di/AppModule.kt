@@ -2,20 +2,16 @@ package com.example.final_project_assignment_hansenbillyramades.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.AddressLocalDataSource
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.AddressLocalDataSourceImpl
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartLocalDataSource
 import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartLocalDataSourceImpl
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.dataStore
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.preferences.PreferenceDataStore
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.room.StomazonDatabase
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.preferences.dataStore
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.ApiService
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.FirebaseAuthDataSource
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.FirebaseAuthDataSourceImpl
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.UserRemoteDataSource
 import com.example.final_project_assignment_hansenbillyramades.data.source.network.UserRemoteDataSourceImpl
-import com.example.final_project_assignment_hansenbillyramades.domain.repository.AddressRepository
-import com.example.final_project_assignment_hansenbillyramades.domain.repository.AddressRepositoryImpl
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.CartRepository
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.CartRepositoryImpl
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.FirebaseAuthRepository
@@ -26,7 +22,6 @@ import com.example.final_project_assignment_hansenbillyramades.domain.repository
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.ProductRepositoryImpl
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.TransactionOrderRepository
 import com.example.final_project_assignment_hansenbillyramades.domain.repository.TransactionOrderRepositoryImpl
-import com.example.final_project_assignment_hansenbillyramades.domain.usecase.AddressUseCase
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
@@ -95,23 +90,6 @@ object AppModule {
         return TransactionOrderRepositoryImpl(remoteDataSource)
     }
 
-    @Provides
-    @Singleton
-    fun provideAddressUseCase(addressRepository: AddressRepository): AddressUseCase {
-        return AddressUseCase(addressRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAddressRepository(addressLocalDataSource: AddressLocalDataSource): AddressRepository {
-        return AddressRepositoryImpl(addressLocalDataSource)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAddressLocalDataSource(stomazonDatabase: StomazonDatabase): AddressLocalDataSource {
-        return AddressLocalDataSourceImpl(stomazonDatabase.addressDao())
-    }
 
     @Provides
     @Singleton

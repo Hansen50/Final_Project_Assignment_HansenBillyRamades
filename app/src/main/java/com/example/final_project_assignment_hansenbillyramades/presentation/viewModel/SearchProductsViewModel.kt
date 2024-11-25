@@ -24,16 +24,20 @@ class SearchProductsViewModel @Inject constructor(
     private val _productState = MutableStateFlow<ProductsState>(ProductsState.Loading)
     val productsState: StateFlow<ProductsState> = _productState.asStateFlow()
 
+    init {
+        loadAllProducts(null)
+    }
 
-    fun loadAllProducts(search: String?, limit: Int?) {
+
+    fun loadAllProducts(search: String?) {
         _productState.value = ProductsState.Loading
         viewModelScope.launch {
             try {
-                val products = listProductUseCase(search, limit)
+                val products = listProductUseCase(search)
                 _productState.value = if (products.isNotEmpty()) {
                     ProductsState.Success(products)
                 } else {
-                    ProductsState.Error("No more products found")
+                    ProductsState.NoResults("No products found for your search")
                 }
             } catch (e: Exception) {
                 _productState.value = ProductsState.Error(e.message ?: "Error")

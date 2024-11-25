@@ -17,7 +17,6 @@ interface ApiService {
     @GET("products")
     suspend fun getAllProducts(
         @Query("search") search: String?,
-        @Query("limit") limit: Int?,
     ): ProductResponse
 
 

@@ -50,7 +50,6 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
 
     private fun observeTransactionOrderData() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.transactionOrderState.collect(object :
                     FlowCollector<TransactionOrderState> {
                     override suspend fun emit(value: TransactionOrderState) {
@@ -96,7 +95,6 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
                             }
                         }
                 })
-            }
         }
     }
 

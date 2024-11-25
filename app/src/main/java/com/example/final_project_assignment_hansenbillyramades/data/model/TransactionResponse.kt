@@ -18,6 +18,8 @@ data class TransactionResponse(
     data class Data(
         @SerializedName("details")
         val details: List<Detail?>?,
+        @SerializedName("or_created_on")
+        val orCreatedOn: String?,
         @SerializedName("or_id")
         val orId: Int?,
         @SerializedName("or_payment_status")

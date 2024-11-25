@@ -34,7 +34,6 @@ class HomeFragment : Fragment(), ItemProductListener {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapter: ItemProductsAdapter
 
-// nge binding xml yang kita gunakan
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -43,15 +42,19 @@ class HomeFragment : Fragment(), ItemProductListener {
         return binding.root
     }
 
-// menyiapkan UI dan viewModel akan di panggil
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getUserInfo()
         setupUI()
         setupRecyclerView()
         observeUserState()
         observeProductsState()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadAllProducts(null)
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
     }
 
     private fun setupUI() {
@@ -81,81 +84,69 @@ class HomeFragment : Fragment(), ItemProductListener {
     }
 
     private fun setupRecyclerView() {
-            adapter = ItemProductsAdapter(emptyList(), this@HomeFragment)
-            binding.rvProducts.adapter = adapter
-            binding.rvProducts.layoutManager = GridLayoutManager(requireContext(), 2)
-
-            viewModel.loadAllProducts(null, null)
-
-            binding.swipeRefreshLayout.setOnRefreshListener {
-                viewModel.loadAllProducts(null, null)
-                binding.swipeRefreshLayout.isRefreshing = false
-            }
+        adapter = ItemProductsAdapter(emptyList(), this@HomeFragment)
+        binding.rvProducts.adapter = adapter
+        binding.rvProducts.layoutManager = GridLayoutManager(requireContext(), 2)
     }
 
     private fun observeUserState() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userState.collect(object : FlowCollector<UserState> {
-                    override suspend fun emit(value: UserState) {
-                            when (value) {
-                                is UserState.Error -> {
-                                    showToast("Failed to load user data, please check your internet connection")
-                                }
+            viewModel.userState.collect(object : FlowCollector<UserState> {
+                override suspend fun emit(value: UserState) {
+                    when (value) {
+                        is UserState.Error -> {
+                            showToast("Failed to load user data, please check your internet connection")
+                        }
 
-                                is UserState.Loading -> {
-                                    showToast("Loading....")
-                                }
+                        is UserState.Loading -> {
+                            showToast("Loading....")
+                        }
 
-                                is UserState.Success -> {
-                                    binding.tvUserName.text = value.user.name
-                                }
-                            }
+                        is UserState.Success -> {
+                            binding.tvUserName.text = value.user.name
+                        }
                     }
-                })
-            }
+                }
+            })
         }
     }
 
     private fun observeProductsState() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productsState.collect(object : FlowCollector<ProductsState> {
-                    override suspend fun emit(value: ProductsState) {
-                            when (value) {
-                                is ProductsState.Success -> {
-                                    Log.d(
-                                        "HomeFragmentData",
-                                        "ReceivedProduct ${value.products.size} products"
-                                    )
-                                    binding.shimmerLayout.stopShimmer()
-                                    binding.shimmerLayout.isVisible = false
-                                    binding.rvProducts.isVisible = true
-                                    binding.swipeRefreshLayout.isRefreshing = false
-                                    adapter.updateData(value.products)
+            viewModel.productsState.collect(object : FlowCollector<ProductsState> {
+                override suspend fun emit(value: ProductsState) {
+                    when (value) {
+                        is ProductsState.Success -> {
+                            Log.d(
+                                "HomeFragmentData",
+                                "ReceivedProduct ${value.products.size} products"
+                            )
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvProducts.isVisible = true
+                            binding.swipeRefreshLayout.isRefreshing = false
+                            adapter.updateData(value.products)
 
-                                }
-
-                                is ProductsState.Loading -> {
-                                    binding.shimmerLayout.startShimmer()
-                                    binding.shimmerLayout.isVisible = true
-                                    binding.rvProducts.isVisible = false
-                                    binding.swipeRefreshLayout.isRefreshing = true
-                                }
-
-                                is ProductsState.Error -> {
-                                    binding.shimmerLayout.startShimmer()
-                                    binding.shimmerLayout.isVisible = true
-                                    binding.rvProducts.isVisible = false
-                                    binding.swipeRefreshLayout.isRefreshing = false
-                                    showToast("Failed to load data product, please check your internet connection")
-                                }
-
-                                else -> {}
-                            }
                         }
-                })
-            }
+
+                        is ProductsState.Loading -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProducts.isVisible = false
+                        }
+
+                        is ProductsState.Error -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvProducts.isVisible = false
+                            binding.swipeRefreshLayout.isRefreshing = false
+                            showToast("Failed to load data product, please check your internet connection")
+                        }
+
+                        else -> {}
+                    }
+                }
+            })
         }
     }
 

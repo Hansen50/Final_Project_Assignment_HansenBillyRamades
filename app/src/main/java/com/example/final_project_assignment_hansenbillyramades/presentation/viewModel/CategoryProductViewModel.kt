@@ -24,17 +24,16 @@ class CategoryProductViewModel @Inject constructor(
     private val _productsState = MutableStateFlow<ProductsState>(ProductsState.Loading)
     val productsState: StateFlow<ProductsState> get() = _productsState
 
+
     fun getProductsByCategory(categoryName: String, search: String?) {
         viewModelScope.launch {
             _productsState.value = ProductsState.Loading
             try {
                 val products = getProductsByCategoryUseCase(categoryName, search)
-                Log.d("CategoryProductViewModel", "Products fetched: $products")
-
-                if (products.isNotEmpty()) {
-                    _productsState.value = ProductsState.Success(products)
+                _productsState.value = if (products.isNotEmpty()) {
+                    ProductsState.Success(products)
                 } else {
-                    _productsState.value = ProductsState.Error("No products found")
+                    ProductsState.NoResults("No products found for your search")
                 }
             } catch (e: Exception) {
                 _productsState.value = ProductsState.Error("Error: ${e.message}")

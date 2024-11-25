@@ -2,8 +2,6 @@ package com.example.final_project_assignment_hansenbillyramades.presentation.vie
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.StomazonDatabase
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
 import com.example.final_project_assignment_hansenbillyramades.domain.model.ProductsState
 import com.example.final_project_assignment_hansenbillyramades.domain.usecase.CartUseCase

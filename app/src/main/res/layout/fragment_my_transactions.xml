@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-        app:title="My Transaction"
+        app:title="@string/my_transaction"
         app:titleTextColor="@color/oil_black" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -48,7 +48,7 @@
         android:id="@+id/tv_no_order"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Empty Order"
+        android:text="@string/empty_order"
         android:textSize="16sp"
         android:textColor="@color/oil_black"
         android:textStyle="bold"
@@ -64,7 +64,7 @@
         android:id="@+id/tv_no_order_detail"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Please add the product to the basket and create an order"
+        android:text="@string/please_add_the_product_to_the_basket_and_create_an_order"
         android:textSize="12sp"
         android:textColor="@color/grey_font_text"
         android:textStyle="normal"

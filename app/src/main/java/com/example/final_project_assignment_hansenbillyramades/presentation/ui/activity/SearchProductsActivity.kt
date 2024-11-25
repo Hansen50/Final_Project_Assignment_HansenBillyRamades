@@ -55,14 +55,13 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
         adapter = ItemProductsAdapter(emptyList(), this)
         binding.rvProducts.layoutManager = GridLayoutManager(this, 2)
         binding.rvProducts.adapter = adapter
-        viewModel.loadAllProducts("", null)
     }
 
     private fun setupSearchView() {
         binding.svSearchProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    viewModel.loadAllProducts(query, null)
+                    viewModel.loadAllProducts(query)
                 }
                 binding.svSearchProduct.clearFocus()
                 return true
@@ -70,7 +69,7 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.isNullOrEmpty()) {
-                    viewModel.loadAllProducts(null, null)
+                    viewModel.loadAllProducts(null)
                 }
                 return true
             }
@@ -86,25 +85,35 @@ class SearchProductsActivity : AppCompatActivity(), ItemProductListener {
                             binding.shimmerLayout.startShimmer()
                             binding.shimmerLayout.isVisible = true
                             binding.rvProducts.isVisible = false
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                             showToast(value.message)
                         }
                         is ProductsState.Loading -> {
                             binding.shimmerLayout.startShimmer()
                             binding.shimmerLayout.isVisible = true
                             binding.rvProducts.isVisible = false
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                         }
                         is ProductsState.Success -> {
                             binding.shimmerLayout.stopShimmer()
                             binding.shimmerLayout.isVisible = false
                             binding.rvProducts.isVisible = true
+                            binding.ivProductSearchNotFound.isVisible = false
+                            binding.tvProductSearchNotFound.isVisible = false
                             Log.d("SearchProductsActivity", "Received ${value.products.size} products")
-                            if (value.products.isNotEmpty()) {
                                 adapter.updateData(value.products)
-                            } else {
-                                showToast("No products found")
-                            }
                         }
 
+                        is ProductsState.NoResults -> {
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvProducts.isVisible = false
+                            binding.ivProductSearchNotFound.isVisible = true
+                            binding.tvProductSearchNotFound.isVisible = true
+                            binding.tvProductSearchNotFound.text = value.message
+                        }
                         else -> {}
 
                     }

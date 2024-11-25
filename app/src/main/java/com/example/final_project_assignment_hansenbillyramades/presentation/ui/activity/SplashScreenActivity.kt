@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.preferences.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivitySplashScreenBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -17,7 +17,7 @@ class SplashScreenActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashScreenBinding
 
     @Inject
-    lateinit var preferenceDataStore: PreferenceDataStore // Injeksi PreferenceDataStore
+    lateinit var preferenceDataStore: PreferenceDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

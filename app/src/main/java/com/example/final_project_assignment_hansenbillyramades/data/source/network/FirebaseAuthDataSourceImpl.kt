@@ -16,5 +16,3 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
         return firebaseAuth.currentUser
     }
 }
-
-// current user adalah data yang berisikan dan simpan data pengguna, berhasil login

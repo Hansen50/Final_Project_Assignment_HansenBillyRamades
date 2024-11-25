@@ -1,21 +1,13 @@
 package com.example.final_project_assignment_hansenbillyramades.presentation.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.final_project_assignment_hansenbillyramades.R
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.CartEntity
 import com.example.final_project_assignment_hansenbillyramades.databinding.ListItemCartBinding
-import com.example.final_project_assignment_hansenbillyramades.databinding.ListItemProductBinding
 import com.example.final_project_assignment_hansenbillyramades.domain.model.Cart
-import com.example.final_project_assignment_hansenbillyramades.domain.model.Products
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemCartListener
-import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemProductListener
-import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyCartViewModel
 import java.text.NumberFormat
 import java.util.Locale
 

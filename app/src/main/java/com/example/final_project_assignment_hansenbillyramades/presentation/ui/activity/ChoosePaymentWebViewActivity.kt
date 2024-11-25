@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 class ChoosePaymentWebViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChoosePaymentWebViewBinding
     private val paymentWebViewModel: PaymentWebViewModel by viewModels()
-    private lateinit var loadingDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChoosePaymentWebViewBinding.inflate(layoutInflater)
@@ -90,7 +89,6 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
     }
 
     private fun handleSuccessfulPayment() {
-        lifecycleScope.launch {
             paymentWebViewModel.clearCart()
             Toast.makeText(
                 this@ChoosePaymentWebViewActivity,
@@ -100,7 +98,6 @@ class ChoosePaymentWebViewActivity : AppCompatActivity() {
             val intent = Intent(this@ChoosePaymentWebViewActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
-        }
     }
 
 

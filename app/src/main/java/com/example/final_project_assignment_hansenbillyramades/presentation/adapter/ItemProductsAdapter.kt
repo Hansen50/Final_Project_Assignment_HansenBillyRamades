@@ -33,21 +33,22 @@ class ItemProductsAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val product = listProduct[position]
 
-        val formattedPrice =
-            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(product.price)
+        val formattedPrice = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(product.price)
         holder.binding.tvNameProduct.text = product.name
         holder.binding.tvPrice.text = formattedPrice
         holder.binding.tvRating.setText(String.format("%.2f", product.averageRating));
 
-
+        val imageUrl = product.images.firstOrNull() ?: ""
         Glide.with(holder.itemView.context)
-            .load(product.image)
+            .load(imageUrl)
 //            .placeholder(R.drawable.placeholder_image)
             .into(holder.binding.ivProduct)
 
+
         holder.binding.root.setOnClickListener {
-            listProduct[position].id.let { idProduct -> listener.onClick(idProduct) }
+            listener.onClick(listProduct[position].id)
         }
+
 
     }
 

@@ -12,7 +12,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
-import com.example.final_project_assignment_hansenbillyramades.data.source.local.PreferenceDataStore
+import com.example.final_project_assignment_hansenbillyramades.data.source.local.preferences.PreferenceDataStore
 import com.example.final_project_assignment_hansenbillyramades.databinding.ActivityLoginBinding
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
+    lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
 
     @Inject
