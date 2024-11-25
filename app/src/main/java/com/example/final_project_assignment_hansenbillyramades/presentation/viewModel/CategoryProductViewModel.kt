@@ -25,7 +25,7 @@ class CategoryProductViewModel @Inject constructor(
     val productsState: StateFlow<ProductsState> get() = _productsState
 
 
-    fun getProductsByCategory(categoryName: String, search: String?) {
+    fun getProductsByCategory(categoryName: String, search: String) {
         viewModelScope.launch {
             _productsState.value = ProductsState.Loading
             try {

@@ -39,7 +39,7 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
         val categoryName = intent.getStringExtra("CATEGORY_NAME") ?: ""
         binding.tvCategoryValue.text = categoryName
 
-        fetchProductsByCategory(categoryName)
+        fetchProductsByCategory(categoryName, "")
         setupSearchView(categoryName)
         observeProductState()
     }
@@ -72,14 +72,14 @@ class CategoryProductActivity : AppCompatActivity(), ItemProductListener {
 
             override fun onQueryTextChange(query: String?): Boolean {
                 if (query.isNullOrEmpty()) {
-                    fetchProductsByCategory(categoryName, null)
+                    fetchProductsByCategory(categoryName, "")
                 }
                 return true
             }
         })
     }
 
-    private fun fetchProductsByCategory(categoryName: String, search: String? = "") {
+    private fun fetchProductsByCategory(categoryName: String, search: String) {
         viewModel.getProductsByCategory(categoryName, search)
     }
 

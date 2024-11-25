@@ -42,15 +42,16 @@ class MyCartFragment : Fragment(), ItemCartListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        viewModel.loadCart()
+        observeCart()
 
         binding.btnCheckout.setOnClickListener {
             handleCheckout()
         }
 
+    }
 
-
-        lifecycleScope.launch {
+    private fun observeCart() {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.cartState.collect(object : FlowCollector<CartState> {
                 override suspend fun emit(value: CartState) {
                     when (value) {
@@ -74,7 +75,9 @@ class MyCartFragment : Fragment(), ItemCartListener {
                                 binding.bottomButtons.isVisible = true
                             }
                             adapter.updateData(carts)
-                            val formattedTotal = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(value.totalPrice)
+                            val formattedTotal =
+                                NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                                    .format(value.totalPrice)
                             binding.tvNumberTotalPrice.text = formattedTotal
                         }
 
@@ -91,6 +94,12 @@ class MyCartFragment : Fragment(), ItemCartListener {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadCart()
+    }
+
+
     private fun setupRecyclerView() {
         adapter = ItemCartsAdapter(emptyList(), this, showDelete = true)
         binding.rvCart.layoutManager = LinearLayoutManager(requireContext())
@@ -99,9 +108,9 @@ class MyCartFragment : Fragment(), ItemCartListener {
 
 
     private fun handleCheckout() {
-            val intent = Intent(requireContext(), CheckoutActivity::class.java)
-            startActivity(intent)
-        }
+        val intent = Intent(requireContext(), CheckoutActivity::class.java)
+        startActivity(intent)
+    }
 
     override fun onDelete(cart: Cart) {
         viewModel.deleteCart(cart)

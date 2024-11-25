@@ -90,7 +90,7 @@ class HomeFragment : Fragment(), ItemProductListener {
     }
 
     private fun observeUserState() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.userState.collect(object : FlowCollector<UserState> {
                 override suspend fun emit(value: UserState) {
                     when (value) {
@@ -98,9 +98,7 @@ class HomeFragment : Fragment(), ItemProductListener {
                             showToast("Failed to load user data, please check your internet connection")
                         }
 
-                        is UserState.Loading -> {
-                            showToast("Loading....")
-                        }
+                        is UserState.Loading -> {}
 
                         is UserState.Success -> {
                             binding.tvUserName.text = value.user.name
@@ -112,7 +110,7 @@ class HomeFragment : Fragment(), ItemProductListener {
     }
 
     private fun observeProductsState() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.productsState.collect(object : FlowCollector<ProductsState> {
                 override suspend fun emit(value: ProductsState) {
                     when (value) {

@@ -38,7 +38,6 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
 
         setupActionBar()
         cartRecyclerView()
-        viewModel.loadCart()
         observeCartState()
         loadingDialogPayment()
         createOrderState()
@@ -100,10 +99,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
             viewModel.cartState.collect(object : FlowCollector<CartState> {
                 override suspend fun emit(value: CartState) {
                     when (value) {
-                        is CartState.Loading -> {
-                            Toast.makeText(this@CheckoutActivity, "Loading", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                        is CartState.Loading -> {}
 
                         is CartState.Success -> {
                             adapter.updateData(value.carts)
@@ -112,6 +108,7 @@ class CheckoutActivity : AppCompatActivity(), ItemCartListener {
                                     .format(value.totalPrice)
                             binding.tvNumberTotalPrice.text = formattedTotal
                             binding.tvNumberPriceDetails.text = formattedTotal
+                            binding.tvTotalItemValue.text = value.totalItem.toString()
 
                         }
 

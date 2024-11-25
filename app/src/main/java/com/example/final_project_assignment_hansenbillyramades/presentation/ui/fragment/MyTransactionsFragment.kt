@@ -20,6 +20,7 @@ import com.example.final_project_assignment_hansenbillyramades.presentation.adap
 import com.example.final_project_assignment_hansenbillyramades.presentation.listener.ItemTransactionOrderListener
 import com.example.final_project_assignment_hansenbillyramades.presentation.ui.activity.TransactionOrderDetailActivity
 import com.example.final_project_assignment_hansenbillyramades.presentation.viewModel.MyTransactionViewModel
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
     private val viewModel: MyTransactionViewModel by viewModels()
     private val binding get() = _binding!!
     private lateinit var adapter: ItemTransactionOrderAdapter
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +48,17 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
         setupRecyclerView()
         observeTransactionOrderData()
 
+        val email = firebaseAuth.currentUser?.email ?: ""
+        if (email.isNotBlank()) {
+            viewModel.loadAllTransactionOrder("settlement", email)
+        } else {
+            Toast.makeText(requireContext(), "Email not available", Toast.LENGTH_SHORT).show()
         }
 
+}
+
     private fun observeTransactionOrderData() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.transactionOrderState.collect(object :
                     FlowCollector<TransactionOrderState> {
                     override suspend fun emit(value: TransactionOrderState) {
@@ -103,7 +112,6 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
         adapter = ItemTransactionOrderAdapter(emptyList(), this@MyTransactionsFragment)
         binding.rvMyTransaction.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMyTransaction.adapter = adapter
-        viewModel.loadAllTransactionOrder("settlement")
     }
 
     override fun onClick(id: String) {

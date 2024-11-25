@@ -26,12 +26,13 @@ interface ApiService {
     @GET("products/category/{categoryName}")
     suspend fun getProductByCategory(
         @Path("categoryName") categoryName: String,
-        @Query("search") search: String?,
+        @Query("search") search: String,
     ): ProductResponse
 
     @GET("orders")
     suspend fun getAllTransactionOrders(
         @Query("orderPaymentStatus") orderPaymentStatus: String,
+        @Query("search") email: String
     ): TransactionResponse
 
     @GET("order/{id}")

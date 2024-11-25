@@ -19,7 +19,7 @@ UserRemoteDataSource{
         return apiService.getProductById(id)
     }
 
-    override suspend fun getProductByCategory(categoryName: String, search: String?): ProductResponse {
+    override suspend fun getProductByCategory(categoryName: String, search: String): ProductResponse {
         return apiService.getProductByCategory(categoryName, search)
     }
 
@@ -27,8 +27,8 @@ UserRemoteDataSource{
         return apiService.createOrder(orderRequest)
     }
 
-    override suspend fun getAllTransactionOrders(orderPaymentStatus: String): TransactionResponse {
-        return apiService.getAllTransactionOrders(orderPaymentStatus)
+    override suspend fun getAllTransactionOrders(orderPaymentStatus: String, email: String): TransactionResponse {
+        return apiService.getAllTransactionOrders(orderPaymentStatus, email)
     }
 
     override suspend fun getTransactionOrdersById(id: String): TransactionOrderDetailResponse {

@@ -19,6 +19,10 @@ class MyCartViewModel @Inject constructor(
     private val _cartState = MutableStateFlow<CartState>(CartState.Loading)
     val cartState: StateFlow<CartState> get() = _cartState
 
+    init {
+        loadCart()
+    }
+
 
     fun loadCart() {
         viewModelScope.launch {
@@ -26,8 +30,10 @@ class MyCartViewModel @Inject constructor(
             try {
                 val cart = cartUseCase.getAllCart()
                 val totalPrice = calculateTotalPrice(cart)
-                _cartState.value = CartState.Success(cart, totalPrice)
+                val totalItem = calculateTotalItem(cart)
+                _cartState.value = CartState.Success(cart, totalPrice, totalItem)
                 calculateTotalPrice(cart)
+                calculateTotalItem(cart)
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Unknown error")
             }
@@ -36,6 +42,10 @@ class MyCartViewModel @Inject constructor(
 
     private fun calculateTotalPrice(cartList: List<Cart>): Float {
         return cartList.sumOf { it.cartPrice * it.quantity }.toFloat()
+    }
+
+    private fun calculateTotalItem(cartList: List<Cart>): Int {
+        return cartList.sumOf { it.quantity }
     }
 
     fun deleteCart(cart: Cart) {

@@ -7,8 +7,8 @@ import javax.inject.Inject
 class GetListTransactionOrderUseCase @Inject constructor(
     private val transactionOrderRepository: TransactionOrderRepository
 ) {
-    suspend operator fun invoke(orderPaymentStatus: String) : List<TransactionOrder> {
-        return transactionOrderRepository.getAllTransactionOrder(orderPaymentStatus)
+    suspend operator fun invoke(orderPaymentStatus: String, email: String) : List<TransactionOrder> {
+        return transactionOrderRepository.getAllTransactionOrder(orderPaymentStatus, email)
     }
 
 }

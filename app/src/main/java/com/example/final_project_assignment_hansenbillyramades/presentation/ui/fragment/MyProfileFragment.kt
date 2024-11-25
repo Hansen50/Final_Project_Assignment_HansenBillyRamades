@@ -46,7 +46,7 @@ class MyProfileFragment : Fragment() {
     }
 
     private fun observeUserData() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.userState.collect(object : FlowCollector<UserState> {
                 override suspend fun emit(value: UserState) {
                     when (value) {

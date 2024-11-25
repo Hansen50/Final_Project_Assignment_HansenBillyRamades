@@ -69,7 +69,7 @@
             android:id="@+id/card_view_increment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
+            app:cardCornerRadius="12dp"
             app:layout_constraintTop_toTopOf="@id/tv_price"
             app:layout_constraintBottom_toBottomOf="@id/iv_delete_cart"
             app:layout_constraintEnd_toEndOf="@id/tv_title_product"
@@ -81,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="4dp"
-                android:paddingVertical="2dp">
+                android:paddingVertical="4dp">
 
                 <ImageView
                     android:id="@+id/btn_decreament"
@@ -93,7 +93,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/et_quantity" />
 
-                <EditText
+                <TextView
                     android:id="@+id/et_quantity"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"

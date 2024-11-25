@@ -11,8 +11,8 @@ class TransactionOrderRepositoryImpl @Inject constructor(
     private val remoteDataSource: UserRemoteDataSource
 ) : TransactionOrderRepository {
 
-    override suspend fun getAllTransactionOrder(orderPaymentStatus: String): List<TransactionOrder> {
-        return remoteDataSource.getAllTransactionOrders(orderPaymentStatus).data?.mapNotNull { it?.toTransaction() } ?: emptyList()
+    override suspend fun getAllTransactionOrder(orderPaymentStatus: String, email: String): List<TransactionOrder> {
+        return remoteDataSource.getAllTransactionOrders(orderPaymentStatus, email).data?.mapNotNull { it?.toTransaction() } ?: emptyList()
     }
 
     override suspend fun getTransactionOrdersById(id: String): TransactionOrderDetail {

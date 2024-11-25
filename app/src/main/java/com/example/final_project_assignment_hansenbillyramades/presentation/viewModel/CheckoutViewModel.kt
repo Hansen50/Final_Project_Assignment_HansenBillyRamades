@@ -29,13 +29,20 @@ class CheckoutViewModel @Inject constructor(
     private val _orderState = MutableStateFlow<OrderState>(OrderState.Loading)
     val orderState: StateFlow<OrderState> get() = _orderState
 
+    init {
+        loadCart()
+    }
+
     fun loadCart() {
         viewModelScope.launch {
             _cartState.value = CartState.Loading
             try {
                 val cart = cartUseCase.getAllCart()
                 val totalPrice = calculateTotalPrice(cart)
-                _cartState.value = CartState.Success(cart, totalPrice)
+                val totalItem = calculateTotalItem(cart)
+                _cartState.value = CartState.Success(cart, totalPrice, totalItem)
+                calculateTotalPrice(cart)
+                calculateTotalItem(cart)
             } catch (e: Exception) {
                 _cartState.value = CartState.Error(e.message ?: "Unknown error")
             }
@@ -66,6 +73,10 @@ class CheckoutViewModel @Inject constructor(
 
     private fun calculateTotalPrice(cartList: List<Cart>): Float {
         return cartList.sumOf { it.cartPrice * it.quantity }.toFloat()
+    }
+
+    private fun calculateTotalItem(cartList: List<Cart>): Int {
+        return cartList.sumOf { it.quantity}
     }
 
     fun createOrderFromCart() {

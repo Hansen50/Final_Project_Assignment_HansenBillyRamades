@@ -8,7 +8,7 @@ class LogoutUseCase @Inject constructor(
     private val firebaseAuthRepository: FirebaseAuthRepository
 ) {
 
-    suspend operator fun invoke() {
+    fun invoke() {
         return firebaseAuthRepository.signOut()
     }
 }
