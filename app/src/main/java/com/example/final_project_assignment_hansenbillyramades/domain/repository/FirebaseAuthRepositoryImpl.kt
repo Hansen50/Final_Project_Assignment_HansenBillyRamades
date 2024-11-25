@@ -15,9 +15,8 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
     override suspend fun getUserInfo(): User? {
         val firebaseUser = firebaseAuthDataSource.getUserInfo()
         return firebaseUser?.let {
-            val firstName = it.displayName?.split(" ")?.first() ?: "No Name"
             User(
-                name = firstName,
+                name = it.displayName?: "No Name",
                 email = it.email ?: "No Email",
                 phone = it.phoneNumber ?: "",
                 photoUrl = it.photoUrl?.toString()

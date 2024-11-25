@@ -101,7 +101,8 @@ class HomeFragment : Fragment(), ItemProductListener {
                         is UserState.Loading -> {}
 
                         is UserState.Success -> {
-                            binding.tvUserName.text = value.user.name
+                            val firstName = value.user.name.split(" ").firstOrNull() ?: "No Name"
+                            binding.tvUserName.text = firstName
                         }
                     }
                 }
@@ -171,6 +172,5 @@ class HomeFragment : Fragment(), ItemProductListener {
 }
 
 // di sini saya menggunakan viewLifecycleowenr karena mengelola view pada fragment ini
-// repeatonlifecycle saya gunakan untuk memgload data apabila fragment nya ini aktif, kalau misalkan kita berpindah
 // halaman maka fragment nya destoryed dan tidak ada lagi load data
 // kemudian hal ini akan mencegah IllegalStateException

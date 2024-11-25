@@ -21,10 +21,13 @@ class ProductRepositoryImpl @Inject constructor(
 
 
     override suspend fun getProductByCategory(categoryName: String, search: String): List<Products> {
-        return remoteDataSource.getProductByCategory(categoryName, search).data
-            ?.flatMap { dataItem -> val category = dataItem?.categories?.firstOrNull()?.ctName ?: "No Category"
-                dataItem?.products.orEmpty().mapNotNull { it?.toProductByCategory(category) }
-            }.orEmpty()
+        return remoteDataSource.getProductByCategory(categoryName, search).data?.flatMap { dataItem ->
+            dataItem?.products?.mapNotNull { product ->
+                product?.toProductByCategory(
+                    dataItem.categories?.firstOrNull()?.ctName ?: "No Category"
+                )
+            } ?: emptyList()
+        } ?: emptyList()
     }
 
 }

@@ -21,7 +21,6 @@ class MyTransactionViewModel @Inject constructor(
     val transactionOrderState: StateFlow<TransactionOrderState> = _transactionOrderState.asStateFlow()
 
     fun loadAllTransactionOrder(orderPaymentStatus: String, email: String) {
-        if (email.isNotBlank()) {
             _transactionOrderState.value = TransactionOrderState.Loading
             viewModelScope.launch {
                 try {
@@ -31,8 +30,5 @@ class MyTransactionViewModel @Inject constructor(
                     _transactionOrderState.value = TransactionOrderState.Error(e.message ?: "Unknown Error")
                 }
             }
-        } else {
-            _transactionOrderState.value = TransactionOrderState.Error("User email is empty")
-        }
     }
 }

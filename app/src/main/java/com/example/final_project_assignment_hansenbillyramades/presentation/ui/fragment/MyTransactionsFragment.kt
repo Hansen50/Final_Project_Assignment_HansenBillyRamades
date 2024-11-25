@@ -48,62 +48,58 @@ class MyTransactionsFragment : Fragment(), ItemTransactionOrderListener {
         setupRecyclerView()
         observeTransactionOrderData()
 
-        val email = firebaseAuth.currentUser?.email ?: ""
-        if (email.isNotBlank()) {
-            viewModel.loadAllTransactionOrder("settlement", email)
-        } else {
-            Toast.makeText(requireContext(), "Email not available", Toast.LENGTH_SHORT).show()
-        }
+        val email = firebaseAuth.currentUser?.email!!
+        viewModel.loadAllTransactionOrder("settlement", email)
 
-}
+    }
 
     private fun observeTransactionOrderData() {
         viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.transactionOrderState.collect(object :
-                    FlowCollector<TransactionOrderState> {
-                    override suspend fun emit(value: TransactionOrderState) {
-                            when (value) {
-                                is TransactionOrderState.Error -> {
-                                    binding.shimmerLayout.stopShimmer()
-                                    binding.shimmerLayout.isVisible = false
-                                    binding.rvMyTransaction.isVisible = false
-                                    Toast.makeText(
-                                        requireContext(),
-                                        value.message,
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
+            viewModel.transactionOrderState.collect(object :
+                FlowCollector<TransactionOrderState> {
+                override suspend fun emit(value: TransactionOrderState) {
+                    when (value) {
+                        is TransactionOrderState.Error -> {
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            binding.rvMyTransaction.isVisible = false
+                            Toast.makeText(
+                                requireContext(),
+                                value.message,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
 
-                                is TransactionOrderState.Loading -> {
-                                    binding.shimmerLayout.startShimmer()
-                                    binding.shimmerLayout.isVisible = true
-                                    binding.rvMyTransaction.isVisible = false
-                                }
+                        is TransactionOrderState.Loading -> {
+                            binding.shimmerLayout.startShimmer()
+                            binding.shimmerLayout.isVisible = true
+                            binding.rvMyTransaction.isVisible = false
+                        }
 
-                                is TransactionOrderState.Success -> {
-                                    val orders = value.transactionOrder
-                                    binding.shimmerLayout.stopShimmer()
-                                    binding.shimmerLayout.isVisible = false
-                                    if (orders.isEmpty()) {
-                                        binding.shimmerLayout.stopShimmer()
-                                        binding.shimmerLayout.isVisible = false
-                                        binding.ivNoOrder.isVisible = true
-                                        binding.tvNoOrder.isVisible = true
-                                        binding.tvNoOrderDetail.isVisible = true
-                                    } else {
-                                        binding.ivNoOrder.isVisible = false
-                                        binding.tvNoOrder.isVisible = false
-                                        binding.tvNoOrderDetail.isVisible = false
-                                        binding.rvMyTransaction.isVisible = true
-                                        adapter.updateData(value.transactionOrder)
-                                    }
-                                }
-
-                                else -> {}
+                        is TransactionOrderState.Success -> {
+                            val orders = value.transactionOrder
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.isVisible = false
+                            if (orders.isEmpty()) {
+                                binding.shimmerLayout.stopShimmer()
+                                binding.shimmerLayout.isVisible = false
+                                binding.ivNoOrder.isVisible = true
+                                binding.tvNoOrder.isVisible = true
+                                binding.tvNoOrderDetail.isVisible = true
+                            } else {
+                                binding.ivNoOrder.isVisible = false
+                                binding.tvNoOrder.isVisible = false
+                                binding.tvNoOrderDetail.isVisible = false
+                                binding.rvMyTransaction.isVisible = true
+                                adapter.updateData(value.transactionOrder)
                             }
                         }
-                })
+
+                        else -> {}
+                    }
+                }
+            })
         }
     }
 
