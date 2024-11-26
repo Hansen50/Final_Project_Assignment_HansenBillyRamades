@@ -12,7 +12,7 @@
 ## Demo
 
 
-## Presenation Slide
+## Presentation Slide
 [PDF](https://github.com/user-attachments/files/17919583/PRESENTATION._STOMAZON.pdf)
 
 ## Tech Stack
