@@ -12,6 +12,9 @@
 ## Demo
 
 
+## Presenation Slide
+[PDF](https://github.com/user-attachments/files/17919583/PRESENTATION._STOMAZON.pdf)
+
 ## Tech Stack
 ![Tech Stack Stomazon](https://github.com/user-attachments/assets/5d7d0d26-b49d-466e-953d-92b6c8294d10)
 
