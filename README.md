@@ -4,8 +4,7 @@
 
 
 ## Stomazon Mobile Apps (Marketplace)
-
-![Intro_banner_app](https://github.com/user-attachments/assets/09d56d83-fe95-45fb-ab02-3ff1be833430)
+![Intro_banner_app](https://github.com/user-attachments/assets/e83dc00f-0e0e-4b93-8cd9-594e5c4a98b8)
 
 Find the Best Online Shopping Experience
 with Stomazon – the marketplace where product quality, great prices, and fast service come together. From everyday essentials to exclusive items, Stomazon has it all. Browse the collection, enjoy amazing deals, and experience hassle-free shopping – all in one app! Join the smart shopping community with Stomazon today!
@@ -45,7 +44,7 @@ Stomazon is built using Kotlin and XML programming languages. Enjoy the amazing 
 - **Transaction Order History:** Users can view the transaction history of orders they’ve made, and the order will be displayed as successful once the payment is completed.
 
 ## Libary
-- **Firebase Analytics:** A tool that helps in monitoring, tracking, prioritizing, and fixing errors in an app.
+- **Firebase Crashlytics:** A tool that helps in monitoring, tracking, prioritizing, and fixing errors in an app.
 - **OkHttp:** A network library that handles HTTP requests and responses in Android and Java applications.
 - **API Logging:** API logging interceptor in Kotlin is used to monitor and log the details of API requests and responses, such as URLs, headers, request/response bodies, status codes, and execution time. It helps developers diagnose issues, analyze API performance, and ensure security and audit compliance by capturing detailed logs of API interactions. This is typically implemented using OkHttp's HttpLoggingInterceptor and is often integrated into Retrofit or OkHttp clients.
 - **Retrofit:** Used to communicate with a web API through HTTP, requires a network connection.
