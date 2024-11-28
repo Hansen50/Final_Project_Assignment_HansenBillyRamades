@@ -26,7 +26,8 @@ Stomazon is built using Kotlin and XML programming languages. Enjoy the amazing 
 
 
 ## Demo
-
+Please click on the image below to see the demo video:
+[![Stomazon Demo](https://github.com/user-attachments/assets/7d138043-d4e7-438d-ad37-033ed8b33c96)](https://youtu.be/iWemVgQvzZY)
 
 ## Presentation Slide
 [Presentation Slide](https://github.com/user-attachments/files/17919583/PRESENTATION._STOMAZON.pdf)
