@@ -4,7 +4,7 @@
 
 
 ## Stomazon Mobile Apps (Marketplace)
-![Intro_banner_app](https://github.com/user-attachments/assets/e83dc00f-0e0e-4b93-8cd9-594e5c4a98b8)
+![Intro_banner_app](https://github.com/user-attachments/assets/a9845189-cfea-4bc5-aa97-c75cab66b412)
 
 Find the Best Online Shopping Experience
 with Stomazon – the marketplace where product quality, great prices, and fast service come together. From everyday essentials to exclusive items, Stomazon has it all. Browse the collection, enjoy amazing deals, and experience hassle-free shopping – all in one app! Join the smart shopping community with Stomazon today!
@@ -26,6 +26,7 @@ Stomazon is built using Kotlin and XML programming languages. Enjoy the amazing 
 
 
 ## Demo
+
 Please click on the image below to see the demo video:
 [![Stomazon Demo](https://github.com/user-attachments/assets/7d138043-d4e7-438d-ad37-033ed8b33c96)](https://youtu.be/iWemVgQvzZY)
 
